@@ -9,23 +9,31 @@ class TextFieldWidget extends StatelessWidget {
   final GestureTapCallback? onTap;
   final String labelText;
   final bool? enabled;
+  final bool? obscureText;
+  final Iterable<String>? autofillHints;
   final ValueChanged<String>? onChanged;
   final TextInputType? textInputType;
   final int? maxLength;
   final int? maxLine;
   final TextInputAction? textInputAction;
+  final String? hintText;
   final Widget? suffixIcon;
+  final Widget? prefix;
   final bool? isRequired;
   const TextFieldWidget({
     required this.labelText,
     this.enabled,
+    this.obscureText,
     this.textInputAction,
     this.controller,
+    this.hintText,
+    this.autofillHints,
     this.onTap,
     this.onChanged,
     this.textInputType,
     this.maxLength,
     this.suffixIcon,
+    this.prefix,
     this.maxLine,
     this.isRequired,
   });
@@ -36,6 +44,8 @@ class TextFieldWidget extends StatelessWidget {
       onTap: onTap,
       child: TextFormField(
           enabled: enabled ?? true,
+          obscureText: obscureText ?? false,
+          autofillHints: autofillHints,
           controller: controller,
           style:  TextStyle(fontSize: 14, color: AppColor.black,),
           inputFormatters: textInputType != null ? textInputType == TextInputType.number ?
@@ -48,9 +58,10 @@ class TextFieldWidget extends StatelessWidget {
           maxLines: maxLine ?? 1,
           textInputAction: textInputAction,
           decoration: InputDecoration(
-
+              hintText: hintText,
               contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: maxLine != null ? 8 : 0),
               suffixIcon: suffixIcon ?? const Text(""),
+              prefixIcon: prefix ?? null,
               label: Text.rich(TextSpan(children: [
                 TextSpan(text: labelText),
                 TextSpan(text: isRequired != null && isRequired == true ? ' *' : "", style: const TextStyle(color: Colors.red)),

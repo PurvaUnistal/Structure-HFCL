@@ -42,8 +42,8 @@ class SchemeData {
   });
 
   factory SchemeData.fromJson(Map<String, dynamic> json) => SchemeData(
-    scheme: json["scheme"] ?? "",
-    schemeId: json["scheme_id"] ?? "",
+    scheme: json["scheme"]==null? "":json["scheme"],
+    schemeId: json["scheme_id"] ==null ? '' : json["scheme_id"],
   );
 
   Map<String, dynamic> toJson() => {

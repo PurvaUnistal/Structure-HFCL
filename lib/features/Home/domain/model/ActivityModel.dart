@@ -20,9 +20,9 @@ class ActivityModel {
   });
 
   factory ActivityModel.fromJson(Map<String, dynamic> json) => ActivityModel(
-    status: json["status"],
-    total: json["total"],
-    data: List<ActivityData>.from(json["data"].map((x) => ActivityData.fromJson(x))),
+    status: json["status"]?? "",
+    total: json["total"] ?? "",
+    data: json["data"] == null ? [] :List<ActivityData>.from(json["data"].map((x) => ActivityData.fromJson(x))),
   );
 
   Map<String, dynamic> toJson() => {
@@ -42,8 +42,8 @@ class ActivityData {
   });
 
   factory ActivityData.fromJson(Map<String, dynamic> json) => ActivityData(
-    id: json["id"] ?? "",
-    name: json["name"] ?? "",
+    id: json["id"]  == null? "" : json["id"],
+    name: json["name"]  == null ? "" : json["name"],
   );
 
   Map<String, dynamic> toJson() => {

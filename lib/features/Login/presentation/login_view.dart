@@ -5,8 +5,8 @@ import 'package:structure_app/Utils/common_widget/app_bar_widget.dart';
 import 'package:structure_app/Utils/common_widget/app_color.dart';
 import 'package:structure_app/Utils/common_widget/app_string.dart';
 import 'package:structure_app/Utils/common_widget/button_widget.dart';
-import 'package:structure_app/Utils/common_widget/dotted_loader_widget.dart';
-import 'package:structure_app/Utils/common_widget/text_form_field_widget.dart';
+import 'package:structure_app/Utils/common_widget/Loader/dotted_loader_widget.dart';
+import 'package:structure_app/Utils/common_widget/text_form_widget.dart';
 import 'package:structure_app/features/InternetConnection/domain/bloc/network_bloc.dart';
 import 'package:structure_app/features/InternetConnection/domain/bloc/network_event.dart';
 import 'package:structure_app/features/Login/domain/bloc/login_bloc.dart';
@@ -87,10 +87,10 @@ class _LoginViewState extends State<LoginView> {
   }
 
   Widget _emailWidget({required LoginFetchDataState dataState}) {
-    return TextFormFieldWidget(
+    return TextFieldWidget(
       labelText: AppString.emailLabel,
       hintText: AppString.emailLabel,
-      keyboardType: TextInputType.emailAddress,
+      textInputType: TextInputType.emailAddress,
       prefix: Icon(Icons.email, color: AppColor.appBlue),
     //  focusNode: emailFocusNode,
       autofillHints: const [AutofillHints.email],
@@ -102,10 +102,10 @@ class _LoginViewState extends State<LoginView> {
   }
 
   Widget _passwordWidget({required LoginFetchDataState dataState}) {
-    return TextFormFieldWidget(
+    return TextFieldWidget(
       labelText: AppString.passwordLabel,
       hintText: AppString.passwordLabel,
-     keyboardType: TextInputType.visiblePassword,
+     textInputType: TextInputType.visiblePassword,
       prefix: Icon(Icons.lock_outline, color: AppColor.appBlue),
      // focusNode: passwordFocusNode,
       autofillHints: const [AutofillHints.password],

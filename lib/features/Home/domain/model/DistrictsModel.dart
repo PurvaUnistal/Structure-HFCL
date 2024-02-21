@@ -6,8 +6,8 @@ class DistrictsModel {
   DistrictsModel({this.status, this.total, this.data});
 
   DistrictsModel.fromJson(Map<String, dynamic> json) {
-    status = json['status'];
-    total = json['total'];
+    status = json['status'] ?? "";
+    total = json['total'] ?? "";
     if (json['data'] != null) {
       data = <DistrictData>[];
       json['data'].forEach((v) {
@@ -34,8 +34,8 @@ class DistrictData {
   DistrictData({this.networkType, this.networkTypeId});
 
   DistrictData.fromJson(Map<String, dynamic> json) {
-    networkType = json['network_type'] ?? "";
-    networkTypeId = json['network_type_id'] ?? "";
+    networkType = json['network_type'] == null ? "" : json['network_type'] ;
+    networkTypeId = json['network_type_id'] == null  ? "" : json['network_type_id'];
   }
 
   Map<String, dynamic> toJson() {

@@ -20,7 +20,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState>{
     on<SelectSchemaEvent>(_selectSchema);
     on<SelectMajorActivityEvent>(_selectMajorActivity);
     on<SelectActivityEvent>(_selectActivity);
-    on<HomeSubmitEvent>(_logout);
+    on<HomeSubmitEvent>(_submitData);
   }
 
   bool _isPageLoader = false;
@@ -77,83 +77,84 @@ class HomeBloc extends Bloc<HomeEvent, HomeState>{
     _eventComplete(emit);
   }
 
-  fetchDistrictData({required BuildContext context}) async {
+  fetchDistrictData({required BuildContext context,}) async {
     var res = await HomeHelper.districtData(context: context);
     if(res != null ){
       _districtList = res.data!;
-    } else if (res != null && res.status == false) {
-      return Utils.failureMeg(res.data.toString(), context);
     }
   }
 
-  fetchBlocksData({required BuildContext context,required int id, emit}) async {
-    var res = await HomeHelper.blocksData(id: int.parse(districtValue!.networkTypeId!),context: context);
-    if(res != null){
+  fetchBlocksData({required BuildContext context,required int districtId, emit}) async {
+    var res = await HomeHelper.blocksData(districtId: districtId,context: context);
+    if(res != null && res.data.isNotEmpty){
       _blockList = res.data;
       blockValue = null;
       schemeValue  = null;
       majorActivityValue = null;
       activityValue  = null;
-    }else if (res != null && res.status == false) {
-      return Utils.failureMeg(res.data.toString(), context);
+      _schemeList = [];
+      _majorActivityList = [];
+      _activityList = [];
+      configuredScopeController.text = "";
+      workDoneTodayController.text = "";
+      remarksController.text = "";
     }
     _eventComplete(emit);
   }
 
-  fetchSchemesData({required BuildContext context,required int id, emit}) async {
-    var res = await HomeHelper.schemesData(id: int.parse(blockValue!.blockId!),context: context);
-    if(res != null){
+  fetchSchemesData({required BuildContext context,required int blockId, emit}) async {
+    var res = await HomeHelper.schemesData(blockId: blockId,context: context);
+    if(res!.data.isNotEmpty){
       _schemeList = res.data;
       schemeValue  = null;
       majorActivityValue = null;
       activityValue  = null;
-    }else if (res != null && res.status == false) {
-      return Utils.failureMeg(res.data.toString(), context);
+    _majorActivityList = [];
+      _activityList = [];
+      configuredScopeController.text = "";
+      workDoneTodayController.text = "";
+      remarksController.text = "";
     }
     _eventComplete(emit);
   }
 
-  fetchMajorActivitiesData({required BuildContext context,required int id, emit}) async {
-    var res = await HomeHelper.majorActivitiesData(id: int.parse(schemeValue!.schemeId!),context: context);
+  fetchMajorActivitiesData({required BuildContext context,required int schemeId, emit}) async {
+    var res = await HomeHelper.majorActivitiesData(schemeId: schemeId, context: context);
     if(res!.data.isNotEmpty){
       _majorActivityList = res.data;
       majorActivityValue = null;
       activityValue = null;
-    } else if (res.data == null && res.status == false) {
-      return Utils.failureMeg(res.data.toString(), context);
-    }
-    _eventComplete(emit);
-  }
-  fetchActivitiesData({required BuildContext context,required int schemeId,required int majeorId, emit}) async {
-    var res = await HomeHelper.activitiesData(
-        schemeId: int.parse(schemeValue!.schemeId!),
-        majeorId: int.parse(majorActivityValue!.majorActivityId!),
-        context: context);
-    if(res != null){
-      _activityList = res.data;
-      activityValue = null;
-    } else if (res != null && res.status == false) {
-      return Utils.failureMeg(res.data.toString(), context);
+      _activityList = [];
+      configuredScopeController.text = "";
+      workDoneTodayController.text = "";
+      remarksController.text = "";
     }
     _eventComplete(emit);
   }
 
-  fetchQuantityData({required BuildContext context,required int schemeId, required int majeorId,required int activeId,emit}) async {
-    var res = await HomeHelper.quantityData(
-        schemeId: int.parse(schemeValue!.schemeId!),
-        majeorId: int.parse(majorActivityValue!.majorActivityId!),
-        activeId: int.parse(activityValue!.id!),
-        context: context);
+  fetchActivitiesData({required BuildContext context,required int schemeId,required int majorActivityId, emit}) async {
+    var res = await HomeHelper.activitiesData(schemeId: schemeId, majorActivityId: majorActivityId, context: context);
+    if(res!.data.isNotEmpty){
+      _activityList = res.data;
+      activityValue = null;
+      configuredScopeController.text = "";
+      workDoneTodayController.text = "";
+      remarksController.text = "";
+
+    }
+    _eventComplete(emit);
+  }
+
+  fetchQuantityData({required BuildContext context,required int schemeId, required int majorActivityId,required int activeId,emit}) async {
+    var res = await HomeHelper.quantityData(schemeId: schemeId, majeorId:majorActivityId, activeId: activeId, context: context);
     if(res != null){
       _quantityData = res.data;
       configuredScopeController.text = _quantityData.quantity! + _quantityData.uomName!;
-    } else if (res != null && res.status == false) {
-      return Utils.failureMeg(res.message.toString(), context);
     }
     _eventComplete(emit);
   }
 
-  _logout(HomeSubmitEvent event,  emit) async {
+  _submitData(HomeSubmitEvent event,  emit) async {
     try{
       var validationCheck = await HomeHelper.validationSubmit(
           context: event.context,
@@ -167,34 +168,34 @@ class HomeBloc extends Bloc<HomeEvent, HomeState>{
       if(validationCheck ==  true){
         _isPageLoader = true;
         _eventComplete(emit);
-      var res= await HomeHelper.progressData(
-          context: event.context,
-          schemeId: schemeValue!.schemeId.toString(),
-          majorActivityId: majorActivityValue!.majorActivityId.toString(),
-          activityId: activityValue!.id.toString(),
-          boqId: quantityData.boqId.toString(),
-          quantity: quantityData.quantity.toString(),
-          targetPerDay: workDoneTodayController.text.trim().toString(),
-          remarks: remarksController.text.trim().toString());
-      //_eventComplete(emit);
-      if(res != null && res.status == true){
-        _isPageLoader = false;
-        _eventComplete(emit);
-        Utils.successToast(res.message!,event.context);
-        Navigator.pushReplacementNamed(event.context, RoutesName.homeView,);
-        districtValue = DistrictData();
-        majorActivityValue = null;
-        blockValue = null;
-        schemeValue = null;
-        activityValue = null;
-        configuredScopeController.text = "";
-        workDoneTodayController.text = "";
-        remarksController.text = "";
-        _eventComplete(emit);
-      } else{
-        _isPageLoader = false;
-        _eventComplete(emit);
-      }}
+        var res= await HomeHelper.progressData(
+            context: event.context,
+            schemeId: schemeValue!.schemeId.toString(),
+            majorActivityId: majorActivityValue!.majorActivityId.toString(),
+            activityId: activityValue!.id.toString(),
+            boqId: quantityData.boqId.toString(),
+            quantity: quantityData.quantity.toString(),
+            targetPerDay: workDoneTodayController.text.trim().toString(),
+            remarks: remarksController.text.trim().toString());
+        //_eventComplete(emit);
+        if(res != null && res.status == true){
+          _isPageLoader = false;
+          _eventComplete(emit);
+          Utils.successToast(res.message!,event.context);
+          Navigator.pushReplacementNamed(event.context, RoutesName.homeView,);
+          districtValue = DistrictData();
+          majorActivityValue = null;
+          blockValue = null;
+          schemeValue = null;
+          activityValue = null;
+          configuredScopeController.text = "";
+          workDoneTodayController.text = "";
+          remarksController.text = "";
+          _eventComplete(emit);
+        } else{
+          _isPageLoader = false;
+          _eventComplete(emit);
+        }}
     }catch(e){
       _isPageLoader = false;
       _eventComplete(emit);
@@ -203,19 +204,25 @@ class HomeBloc extends Bloc<HomeEvent, HomeState>{
 
   _selectDistrict(SelectDistrictEvent event, emit) async {
     districtValue = event.districtValue;
-    await fetchBlocksData(id: int.parse(districtValue!.networkTypeId!), context: event.context,  emit: emit);
+    await fetchBlocksData(
+        districtId: int.parse(districtValue!.networkTypeId!),
+        context: event.context,  emit: emit);
     _eventComplete(emit);
   }
 
   _selectBlock(SelectBlockEvent event, emit) async {
     blockValue = event.blockValue;
-    await fetchSchemesData(id: int.parse(blockValue!.blockId!), context: event.context,  emit: emit);
+    await fetchSchemesData(
+        blockId: int.parse(blockValue!.blockId!),
+        context: event.context,  emit: emit);
     _eventComplete(emit);
   }
 
   _selectSchema(SelectSchemaEvent event, emit) async {
     schemeValue = event.schemaValue;
-    await fetchMajorActivitiesData(id: int.parse(schemeValue!.schemeId!), context: event.context, emit: emit);
+    await fetchMajorActivitiesData(
+        schemeId: int.parse(schemeValue!.schemeId!),
+        context: event.context, emit: emit);
     _eventComplete(emit);
   }
 
@@ -223,7 +230,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState>{
     majorActivityValue = event.majorActivityValue;
     await fetchActivitiesData(
         schemeId: int.parse(schemeValue!.schemeId!),
-        majeorId: int.parse(majorActivityValue!.majorActivityId!),
+        majorActivityId: int.parse(majorActivityValue!.majorActivityId!),
         context: event.context, emit: emit);
     _eventComplete(emit);
   }
@@ -232,7 +239,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState>{
     activityValue = event.activityValue;
     await fetchQuantityData(
         schemeId: int.parse(schemeValue!.schemeId!),
-        majeorId: int.parse(majorActivityValue!.majorActivityId!),
+        majorActivityId: int.parse(majorActivityValue!.majorActivityId!),
         activeId: int.parse(activityValue!.id!),
         context: event.context, emit: emit);
     _eventComplete(emit);

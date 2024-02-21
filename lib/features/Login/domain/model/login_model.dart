@@ -11,7 +11,7 @@ String loginModelToJson(LoginModel data) => json.encode(data.toJson());
 class LoginModel {
   final int? status;
   final bool? error;
-  final String? messages;
+  final dynamic messages;
   final String? token;
   final User? user;
   final String? exptime;
@@ -26,18 +26,18 @@ class LoginModel {
   });
 
   factory LoginModel.fromJson(Map<String, dynamic> json) => LoginModel(
-    status: json["status"],
-    error: json["error"],
-    messages: json["messages"],
-    token: json["token"],
-    user: User.fromJson(json["user"]),
-    exptime: json["exptime"],
+    status: json["status"] ?? null,
+    error: json["error"]?? null,
+    messages: json["messages"] ?? Messages.fromJson(json["messages"]),
+    token: json["token"]?? null,
+    user: json["user"]== null ? null : User.fromJson(json["user"]),
+    exptime: json["exptime"]?? null,
   );
 
   Map<String, dynamic> toJson() => {
     "status": status,
     "error": error,
-    "messages": messages,
+    "messages":  messages ??  messages.toJson(),
     "token": token,
     "user": user!.toJson(),
     "exptime": exptime,
@@ -85,5 +85,22 @@ class User {
     "modules": modules,
     "schema": schema,
     "role": role,
+  };
+}
+
+
+class Messages {
+  final String email;
+
+  Messages({
+    required this.email,
+  });
+
+  factory Messages.fromJson(Map<String, dynamic> json) => Messages(
+    email: json["email"] ?? null,
+  );
+
+  Map<String, dynamic> toJson() => {
+    "email": email,
   };
 }

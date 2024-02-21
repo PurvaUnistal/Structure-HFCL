@@ -20,9 +20,9 @@ class MajorActivityModel {
   });
 
   factory MajorActivityModel.fromJson(Map<String, dynamic> json) => MajorActivityModel(
-    status: json["status"],
-    total: json["total"],
-    data: List<MajorActivityData>.from(json["data"].map((x) => MajorActivityData.fromJson(x))),
+    status: json["status"] ?? "",
+    total: json["total"] ?? "",
+    data: json["data"] == null ? []:List<MajorActivityData>.from(json["data"].map((x) => MajorActivityData.fromJson(x))),
   );
 
   Map<String, dynamic> toJson() => {
@@ -42,8 +42,8 @@ class MajorActivityData {
   });
 
   factory MajorActivityData.fromJson(Map<String, dynamic> json) => MajorActivityData(
-    majorActivityId: json["major_activity_id"] ?? "",
-    majorActivity: json["major_activity"] ?? "",
+    majorActivityId: json["major_activity_id"]  == null?  "" : json["major_activity_id"],
+    majorActivity: json["major_activity"] == null ? "" : json["major_activity"],
   );
 
   Map<String, dynamic> toJson() => {

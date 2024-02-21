@@ -20,9 +20,9 @@ class BlockModel {
   });
 
   factory BlockModel.fromJson(Map<String, dynamic> json) => BlockModel(
-    status: json["status"],
-    total: json["total"],
-    data: List<BlockData>.from(json["data"].map((x) => BlockData.fromJson(x))),
+    status: json["status"] ?? "",
+    total: json["total"] ?? "",
+    data: json["data"] == null ? [] :List<BlockData>.from(json["data"].map((x) => BlockData.fromJson(x))),
   );
 
   Map<String, dynamic> toJson() => {

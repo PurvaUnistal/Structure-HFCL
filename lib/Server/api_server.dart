@@ -17,24 +17,22 @@ class ApiServer {
 
   static Future<dynamic> getData({var urlEndPoint, required BuildContext context}) async{
     await PreferenceUtil().init();
-    String cookies = await PreferenceUtil.getString(key: PrefsValue.cookies);
-     String token =  await PreferenceUtil.getString(key: PrefsValue.token);
-     var header = {
-     "Authorization":token,
+    String token =  await PreferenceUtil.getString(key: PrefsValue.token);
+    var header = {
+      "Authorization":token,
     };
     try {
-      var response = await get(Uri.parse(urlEndPoint), headers: header
-      ).timeout(const Duration(minutes: 4));
+      var response = await get(Uri.parse(urlEndPoint),headers: header).timeout(const Duration(minutes: 4));
       log("URL-->${urlEndPoint.toString()}");
       log(urlEndPoint + "==>" + response.body.toString());
-      if (response.statusCode == 200) {
+      if (response. statusCode == 200) {
         return response.body.toString();
-      } else if(response.body == "Access denied"){
+      } else if (response.statusCode == 401 && response.body == "Access denied") {
         await PreferenceUtil.clearAll();
-        Navigator.of(context).pushNamedAndRemoveUntil(RoutesName.splashView, (Route<dynamic> route) => false);
+        return Navigator.of(context).pushNamedAndRemoveUntil(RoutesName.splashView, (Route<dynamic> route) => false);
       } else {
         log("Api.error-->${Api.error}");
-        return Api.error;
+        return null;
       }
     } catch (e){
       log("ApiServer-->${e.toString()}");
@@ -48,26 +46,28 @@ class ApiServer {
         log("Unhandled exception : ${e.toString()}");
         Utils.warningMeg(e.toString(), context);
       }
-      return Api.error;
+      return null;
     }
   }
 
   static Future<dynamic> postData({var urlEndPoint, required BuildContext context, var bodyReq,}) async {
     await PreferenceUtil().init();
     String token =  await PreferenceUtil.getString(key: PrefsValue.token);
-    var header = {"Authorization":token,};
+    var header = {"Authorization":token};
     try {
       final response = await post(Uri.parse(urlEndPoint),
           headers: header, body: bodyReq).timeout(const Duration(minutes: 1));
       log("getResponse ===== ${response.body}");
       if (response.statusCode == 200) {
-        return response.body.toString();
-      } else if(response.body == "Access denied"){
+        return jsonDecode(response.body.toString());
+      } else if (response.statusCode == 401 && response.body == "Access denied") {
         await PreferenceUtil.clearAll();
-        Navigator.of(context).pushNamedAndRemoveUntil(RoutesName.splashView, (Route<dynamic> route) => false);
-      } else {
+        return Navigator.of(context).pushNamedAndRemoveUntil(RoutesName.splashView, (Route<dynamic> route) => false);
+      }else if(response.statusCode == 401){
+        return jsonDecode(response.body.toString());
+      }else {
         log("Api.error-->${Api.error}");
-        return Api.error;
+        return null;
       }
     } catch (e) {
       if (e is SocketException) {

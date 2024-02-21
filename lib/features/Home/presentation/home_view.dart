@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:structure_app/Utils/common_widget/SpinLoader.dart';
+import 'package:structure_app/Utils/common_widget/Loader/SpinLoader.dart';
 import 'package:structure_app/Utils/common_widget/app_bar_widget.dart';
 import 'package:structure_app/Utils/common_widget/app_color.dart';
 import 'package:structure_app/Utils/common_widget/app_string.dart';
 import 'package:structure_app/Utils/common_widget/button_widget.dart';
-import 'package:structure_app/Utils/common_widget/dotted_loader_widget.dart';
+import 'package:structure_app/Utils/common_widget/Loader/dotted_loader_widget.dart';
 import 'package:structure_app/Utils/common_widget/dropdown_widget.dart';
 import 'package:structure_app/Utils/common_widget/text_form_widget.dart';
 import 'package:structure_app/features/Home/domain/bloc/home_bloc.dart';

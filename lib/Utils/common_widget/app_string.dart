@@ -1,9 +1,10 @@
-import 'package:flutter/material.dart';
+
 
 class AppString {
   static String appName = "HFCL App";
 
   static String emailLabel = "Enter User Name";
+  static String emailValid = "The email field must contain a valid email address.";
   static String passwordLabel = "Enter User Password";
 
 

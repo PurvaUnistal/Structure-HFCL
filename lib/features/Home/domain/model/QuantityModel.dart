@@ -18,7 +18,7 @@ class QuantityModel {
   });
 
   factory QuantityModel.fromJson(Map<String, dynamic> json) => QuantityModel(
-    status: json["status"],
+    status: json["status"] ?? "",
     data: QuantityData.fromJson(json["data"]),
   );
 
@@ -40,9 +40,9 @@ class QuantityData {
   });
 
   factory QuantityData.fromJson(Map<String, dynamic> json) => QuantityData(
-    boqId: json["boq_id"] ?? "",
-    quantity: json["quantity"] ?? "",
-    uomName: json["uom_name"] ?? "",
+    boqId: json["boq_id"]  == null ? "" : json["boq_id"],
+    quantity: json["quantity"] == null ? "" : json["quantity"],
+    uomName: json["uom_name"]== null ? '' :json["uom_name"],
   );
 
   Map<String, dynamic> toJson() => {

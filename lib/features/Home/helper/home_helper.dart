@@ -3,10 +3,7 @@ import 'dart:developer';
 import 'package:flutter/cupertino.dart';
 import 'package:structure_app/Server/api_server.dart';
 import 'package:structure_app/Server/app_url.dart';
-import 'package:structure_app/Utils/common_widget/SharedPerfs/Prefs_Value.dart';
-import 'package:structure_app/Utils/common_widget/SharedPerfs/preference_utils.dart';
 import 'package:structure_app/Utils/common_widget/Utils.dart';
-import 'package:structure_app/Utils/routes/routes_name.dart';
 import 'package:structure_app/features/Home/domain/model/ActivityModel.dart';
 import 'package:structure_app/features/Home/domain/model/BlockModel.dart';
 import 'package:structure_app/features/Home/domain/model/DistrictsModel.dart';
@@ -22,84 +19,93 @@ class HomeHelper{
       var res = await ApiServer.getData(urlEndPoint: AppUrl.districts,context: context);
       if(res != null){
         return DistrictsModel.fromJson(jsonDecode(res));
+      }else {
+        log("DistrictsModelRes-->${res}");
+        return Utils.failureMeg(res, context);
       }
     } catch (e) {
       log("catchLogin-->${e.toString()}");
       Utils.failureMeg(e.toString(), context);
       return null;
     }
-    return null;
   }
 
-  static Future<BlockModel?> blocksData({required BuildContext context,required int id}) async {
+  static Future<BlockModel?> blocksData({required BuildContext context,required int districtId}) async {
     try {
-      var res = await ApiServer.getData(urlEndPoint: "${AppUrl.blocks}$id",context: context);
+      var res = await ApiServer.getData(urlEndPoint: "${AppUrl.blocks}$districtId",context: context);
       if(res != null){
         return blockModelFromJson(res);
+      }else {
+        log("BlockModelRes-->${res}");
+        return Utils.failureMeg(res, context);
       }
     } catch (e) {
       log("catchLogin-->${e.toString()}");
       Utils.failureMeg(e.toString(), context);
       return null;
     }
-    return null;
   }
 
-  static Future<dynamic> quantityData({required BuildContext context,required int schemeId, required int majeorId, activeId}) async {
+  static Future<QuantityModel?> quantityData({required BuildContext context,required int schemeId, required int majeorId, activeId}) async {
     try {
       var res = await ApiServer.getData(urlEndPoint: "${AppUrl.quantity}$schemeId/$majeorId/$activeId",context: context);
       if(res != null){
-        //   return quantityModelFromJson(res).data.toJson().values.toList();
         return quantityModelFromJson(res);
+      }else {
+        log("BlockModelRes-->${res}");
+        return Utils.failureMeg(res, context);
       }
     } catch (e) {
       log("catchLogin-->${e.toString()}");
       Utils.failureMeg(e.toString(), context);
       return null;
     }
-    return null;
   }
 
-  static Future<SchemeModel?> schemesData({required BuildContext context,required int id}) async {
+  static Future<SchemeModel?> schemesData({required BuildContext context,required int blockId}) async {
     try {
-      var res = await ApiServer.getData(urlEndPoint: "${AppUrl.schemes}$id",context: context);
+      var res = await ApiServer.getData(urlEndPoint: "${AppUrl.schemes}$blockId",context: context);
       if(res != null){
         return schemeModelFromJson(res);
+      }else {
+        return Utils.failureMeg(res, context);
       }
     } catch (e) {
       log("catchLogin-->${e.toString()}");
       Utils.failureMeg(e.toString(), context);
       return null;
     }
-    return null;
   }
 
-  static Future<MajorActivityModel?> majorActivitiesData({required BuildContext context,required int id}) async {
+  static Future<MajorActivityModel?> majorActivitiesData({required BuildContext context,required int schemeId}) async {
     try {
-      var res = await ApiServer.getData(urlEndPoint: "${AppUrl.majorActivities}$id",context: context);
+      var res = await ApiServer.getData(urlEndPoint: "${AppUrl.majorActivities}$schemeId",context: context);
       if(res != null){
         return majorActivityModelFromJson(res);
+      }else {
+        return Utils.failureMeg(res, context);
       }
     } catch (e) {
       log("catchLogin-->${e.toString()}");
       Utils.failureMeg(e.toString(), context);
       return null;
     }
-    return null;
   }
 
-  static Future<ActivityModel?> activitiesData({required BuildContext context,required int schemeId, required int majeorId}) async {
+  static Future<ActivityModel?> activitiesData({required BuildContext context,required int schemeId, required int majorActivityId}) async {
     try {
-      var res = await ApiServer.getData(urlEndPoint: "${AppUrl.activities}$schemeId/$majeorId",context: context);
+      var res = await ApiServer.getData(urlEndPoint: "${AppUrl.activities}$schemeId/$majorActivityId",context: context);
       if(res != null){
         return activityModelFromJson(res);
+      }else {
+        return Utils.failureMeg(res, context);
       }
     } catch (e) {
       log("catchLogin-->${e.toString()}");
       Utils.failureMeg(e.toString(), context);
       return null;
     }
-    return null;
+
   }
 
 
@@ -143,7 +149,7 @@ class HomeHelper{
   }
 
 
-  static Future<SubmitModel?>progressData({
+  static Future<dynamic>progressData({
     required BuildContext context,
     required String schemeId,
     required String majorActivityId,
@@ -153,8 +159,6 @@ class HomeHelper{
     required String targetPerDay,
     required String remarks,
   }) async {
-    await PreferenceUtil().init();
-    String schema = await PreferenceUtil.getString(key: PrefsValue.schema);
     var body = {
       "schemeId":schemeId,
       "majorActivityId":majorActivityId,
@@ -166,19 +170,17 @@ class HomeHelper{
     };
     try {
       var res = await ApiServer.postData(urlEndPoint: "${AppUrl.progress}",context: context, bodyReq: body);
-      if(res != null){
-        return SubmitModel.fromJson(jsonDecode(res));
+      if(res != null && res["status"] == true){
+        return SubmitModel.fromJson(res);
+      } else  if(res != null && res["status"] == false){
+        return Utils.failureMeg(res["errors"], context);
       } else{
-        return Utils.failureMeg(res.errors.toString(), context);
+        return Utils.failureMeg(res, context);
       }
     } catch (e) {
       log("catchLogin-->${e.toString()}");
       Utils.failureMeg(e.toString(), context);
-      return null;
+  //    return null;
     }
-    return null;
   }
-
-
-
 }

@@ -60,12 +60,10 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       try {
         _isPageLoader = true;
         _eventCompleted(emit);
-        var res = await LoginHelper.loginData(
-            emailId: emailId, password: password, context: event.context);
-        if (res != null) {
+        var res = await LoginHelper.loginData(emailId: emailId, password: password, context: event.context);
+        if (res != null && res.user != null) {
           _isPageLoader = false;
           _eventCompleted(emit);
-          if (res.user != null) {
             _loginModel = res;
             Utils.successToast(res.messages!,event.context);
             await PreferenceUtil.setString(key: PrefsValue.emailVal, value: res.user!.email.toString());
@@ -77,9 +75,6 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
             await PreferenceUtil.setString(key:  PrefsValue.userId, value: res.user!.id.toString());
             await PreferenceUtil.setString(key:  PrefsValue.gaId, value: res.user!.gaId.toString());
             Navigator.pushReplacementNamed(event.context, RoutesName.homeView);
-          } else if (res.status != 200) {
-            return Utils.failureMeg(res.messages.toString(), event.context);
-          }
         } else {
           _isPageLoader = false;
           _eventCompleted(emit);
