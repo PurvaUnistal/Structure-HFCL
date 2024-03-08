@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:structure_app/Utils/common_widget/Utils.dart';
@@ -26,6 +28,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState>{
   bool _isPageLoader = false;
   bool get isPageLoader => _isPageLoader;
 
+  File _photo = File("");
+  File get photo => _photo;
+
   DistrictData? districtValue;
   BlockData? blockValue;
   SchemeData? schemeValue;
@@ -51,6 +56,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState>{
   List<ActivityData> _activityList =  [];
   List<ActivityData> get activityList => _activityList;
 
+  TextEditingController startDateController = TextEditingController();
+  TextEditingController endDateController = TextEditingController();
   TextEditingController configuredScopeController = TextEditingController();
   TextEditingController workDoneTodayController = TextEditingController();
   TextEditingController remarksController = TextEditingController();
@@ -58,6 +65,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState>{
   _pageLoader(HomePageLoaderEvent event, emit) async {
     emit(HomePageLoaderState());
     _isPageLoader = false;
+    _photo = File("");
     districtValue = DistrictData();
     blockValue = BlockData();
     schemeValue = SchemeData();
@@ -70,6 +78,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState>{
     _quantityData =QuantityData();
     _majorActivityList =  [];
     _activityList =  [];
+    startDateController.text = "";
+    endDateController.text = "";
     configuredScopeController.text = "";
     workDoneTodayController.text = "";
     remarksController.text = "";
@@ -248,6 +258,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState>{
   _eventComplete(Emitter<HomeState>emit){
     emit(HomeFetchDataState(
         isPageLoader: isPageLoader,
+        photo: photo,
         districtValue: districtValue,
         blockValue: blockValue,
         schemeValue: schemeValue,
@@ -259,6 +270,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState>{
         quantityList: quantityData,
         majorActivityList: majorActivityList,
         activityList: activityList,
+        startDateController: startDateController,
+        endDateController: endDateController,
         configuredScopeController: configuredScopeController,
         workDoneTodayController: workDoneTodayController,
         remarksController: remarksController

@@ -8,7 +8,9 @@ import 'package:structure_app/Utils/common_widget/app_string.dart';
 import 'package:structure_app/Utils/common_widget/button_widget.dart';
 import 'package:structure_app/Utils/common_widget/Loader/dotted_loader_widget.dart';
 import 'package:structure_app/Utils/common_widget/dropdown_widget.dart';
+import 'package:structure_app/Utils/common_widget/image_pop_widget.dart';
 import 'package:structure_app/Utils/common_widget/text_form_widget.dart';
+import 'package:structure_app/Utils/local_img_widget.dart';
 import 'package:structure_app/features/Home/domain/bloc/home_bloc.dart';
 import 'package:structure_app/features/Home/domain/bloc/home_event.dart';
 import 'package:structure_app/features/Home/domain/bloc/home_state.dart';
@@ -201,7 +203,28 @@ class _HomeViewState extends State<HomeView> {
         )
     );
   }
-
+  Widget _photo({required HomeFetchDataState dataState}) {
+    return LocalImgWidget(
+      file: dataState.photo,
+      onTap: () {
+        showModalBottomSheet(
+            enableDrag: true,
+            isScrollControlled: true,
+            context: context, builder: (BuildContext context){
+          return  ImagePopWidget(
+            onTapCamera: () async {
+              Navigator.of(context).pop();
+              BlocProvider.of<HomeBloc>(context).add(CaptureCameraEvent());
+            },
+            onTapGallery: () async {
+              Navigator.of(context).pop();
+              BlocProvider.of<HomeBloc>(context).add(CaptureGalleryEvent());
+            },
+          );
+        });
+      },
+    );
+  }
 
   Widget _button({required HomeFetchDataState dataState}) {
     return dataState.isPageLoader == false

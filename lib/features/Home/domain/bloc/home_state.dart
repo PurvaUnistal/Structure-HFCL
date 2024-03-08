@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:structure_app/features/Home/domain/model/ActivityModel.dart';
@@ -22,6 +24,7 @@ class HomePageLoaderState extends HomeState{
 
 class HomeFetchDataState extends HomeState{
   bool isPageLoader;
+  final File photo;
   DistrictData? districtValue;
   BlockData? blockValue;
   SchemeData? schemeValue;
@@ -34,11 +37,14 @@ class HomeFetchDataState extends HomeState{
   QuantityData  quantityList;
   List<MajorActivityData> majorActivityList;
   List<ActivityData> activityList;
+  TextEditingController startDateController;
+  TextEditingController endDateController;
   TextEditingController configuredScopeController;
   TextEditingController workDoneTodayController;
   TextEditingController remarksController;
   HomeFetchDataState({
     required this.isPageLoader,
+    required this.photo,
     required this.districtValue,
     required this.blockValue,
     required this.schemeValue,
@@ -51,6 +57,8 @@ class HomeFetchDataState extends HomeState{
   required this.quantityList,
     required this.majorActivityList,
     required this.activityList,
+    required this. startDateController,
+    required this. endDateController,
     required this. configuredScopeController,
     required this.workDoneTodayController,
     required this.remarksController,
@@ -60,6 +68,7 @@ class HomeFetchDataState extends HomeState{
   // TODO: implement props
   List<Object?> get props => [
     isPageLoader,
+    photo,
     districtValue,
     blockValue,
     schemeValue,
@@ -72,6 +81,9 @@ class HomeFetchDataState extends HomeState{
     quantityList,
     majorActivityList,
     activityList,
+    startDateController,
+    endDateController,
+    configuredScopeController,
     configuredScopeController,
     workDoneTodayController,
     remarksController

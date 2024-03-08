@@ -57,6 +57,18 @@ class SelectActivityEvent extends HomeEvent{
   List<Object?> get props => [activityValue, context];
 }
 
+class CaptureGalleryEvent extends HomeEvent{
+  @override
+  // TODO: implement props
+  List<Object?> get props => [];
+}
+
+class CaptureCameraEvent extends HomeEvent{
+  @override
+  // TODO: implement props
+  List<Object?> get props => [];
+}
+
 class HomeSubmitEvent extends HomeEvent{
   final BuildContext context;
   HomeSubmitEvent({required this.context});

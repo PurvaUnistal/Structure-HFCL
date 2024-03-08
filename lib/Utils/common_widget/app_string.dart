@@ -12,7 +12,11 @@ class AppString {
   static String block = "Block";
   static String scheme = "Scheme";
   static String majorActivity = "Major Activity";
+  static String subSystem = "Sub System";
   static String activity = "Activity";
+  static String startDate = "Start Date";
+  static String endDate = "End  Date";
+  static String photo = "Photo";
   static String configuredScope = "Configured Scope(qty)";
   static String workDoneToday = "Work Done Today";
   static String remarks = "Remarks";
