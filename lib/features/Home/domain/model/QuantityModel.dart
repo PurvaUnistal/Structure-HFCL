@@ -9,50 +9,25 @@ QuantityModel quantityModelFromJson(String str) => QuantityModel.fromJson(json.d
 String quantityModelToJson(QuantityModel data) => json.encode(data.toJson());
 
 class QuantityModel {
-  final bool status;
-  final QuantityData data;
+  final bool? status;
+  final String? activityId;
+  final String? message;
 
   QuantityModel({
-    required this.status,
-    required this.data,
+    this.status,
+    this.activityId,
+    this.message,
   });
 
   factory QuantityModel.fromJson(Map<String, dynamic> json) => QuantityModel(
-    status: json["status"] ?? "",
-    data: QuantityData.fromJson(json["data"]),
-  );
+        status: json["status"],
+        activityId: json["activityId"],
+        message: json["message"],
+      );
 
   Map<String, dynamic> toJson() => {
-    "status": status,
-    "data": data.toJson(),
-  };
-}
-
-class QuantityData {
-  final String? boqId;
-  final String? quantity;
-  final String? uomName;
-
-  QuantityData({
-     this.boqId,
-     this.quantity,
-     this.uomName,
-  });
-
-  factory QuantityData.fromJson(Map<String, dynamic> json) => QuantityData(
-    boqId: json["boq_id"]  == null ? "" : json["boq_id"],
-    quantity: json["quantity"] == null ? "" : json["quantity"],
-    uomName: json["uom_name"]== null ? '' :json["uom_name"],
-  );
-
-  Map<String, dynamic> toJson() => {
-    "boq_id": boqId,
-    "quantity": quantity,
-    "uom_name": uomName,
-  };
-  @override
-  String toString() {
-    // TODO: implement toString
-    return uomName.toString();
-  }
+        "status": status,
+        "activityId": activityId,
+        "message": message,
+      };
 }

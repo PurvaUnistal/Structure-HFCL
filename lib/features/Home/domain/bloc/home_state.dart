@@ -9,32 +9,33 @@ import 'package:structure_app/features/Home/domain/model/MajorActivityModel.dart
 import 'package:structure_app/features/Home/domain/model/QuantityModel.dart';
 import 'package:structure_app/features/Home/domain/model/SchemeModel.dart';
 
-abstract class HomeState extends Equatable{}
+abstract class HomeState extends Equatable {}
 
-class HomeInitialState extends HomeState{
-  @override
-  // TODO: implement props
-  List<Object?> get props => [];
-}
-class HomePageLoaderState extends HomeState{
+class HomeInitialState extends HomeState {
   @override
   // TODO: implement props
   List<Object?> get props => [];
 }
 
-class HomeFetchDataState extends HomeState{
+class HomePageLoaderState extends HomeState {
+  @override
+  // TODO: implement props
+  List<Object?> get props => [];
+}
+
+class HomeFetchDataState extends HomeState {
   bool isPageLoader;
   final File photo;
   DistrictData? districtValue;
   BlockData? blockValue;
   SchemeData? schemeValue;
-  QuantityData? quantityValue;
+  QuantityModel? quantityValue;
   MajorActivityData? majorActivityValue;
   ActivityData? activityValue;
   List<DistrictData> districtList;
   List<BlockData> blockList;
-  List<SchemeData>  schemeList;
-  QuantityData  quantityList;
+  List<SchemeData> schemeList;
+  QuantityModel quantityList;
   List<MajorActivityData> majorActivityList;
   List<ActivityData> activityList;
   TextEditingController startDateController;
@@ -52,40 +53,40 @@ class HomeFetchDataState extends HomeState{
     required this.majorActivityValue,
     required this.activityValue,
     required this.districtList,
-     required this.blockList,
+    required this.blockList,
     required this.schemeList,
-  required this.quantityList,
+    required this.quantityList,
     required this.majorActivityList,
     required this.activityList,
-    required this. startDateController,
-    required this. endDateController,
-    required this. configuredScopeController,
+    required this.startDateController,
+    required this.endDateController,
+    required this.configuredScopeController,
     required this.workDoneTodayController,
     required this.remarksController,
-});
+  });
 
   @override
   // TODO: implement props
   List<Object?> get props => [
-    isPageLoader,
-    photo,
-    districtValue,
-    blockValue,
-    schemeValue,
-    quantityValue,
-    majorActivityValue,
-    activityValue,
-    districtList,
-    blockList,
-    schemeList,
-    quantityList,
-    majorActivityList,
-    activityList,
-    startDateController,
-    endDateController,
-    configuredScopeController,
-    configuredScopeController,
-    workDoneTodayController,
-    remarksController
-  ];
+        isPageLoader,
+        photo,
+        districtValue,
+        blockValue,
+        schemeValue,
+        quantityValue,
+        majorActivityValue,
+        activityValue,
+        districtList,
+        blockList,
+        schemeList,
+        quantityList,
+        majorActivityList,
+        activityList,
+        startDateController,
+        endDateController,
+        configuredScopeController,
+        configuredScopeController,
+        workDoneTodayController,
+        remarksController
+      ];
 }
