@@ -1,6 +1,5 @@
 import 'dart:developer';
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
@@ -10,19 +9,18 @@ import 'package:structure_app/features/Home/domain/bloc/home_event.dart';
 import 'package:structure_app/features/Home/domain/bloc/home_state.dart';
 import 'package:structure_app/features/Home/domain/model/ActivityModel.dart';
 import 'package:structure_app/features/Home/domain/model/BlockModel.dart';
-import 'package:structure_app/features/Home/domain/model/DistrictsModel.dart';
-import 'package:structure_app/features/Home/domain/model/MajorActivityModel.dart';
-import 'package:structure_app/features/Home/domain/model/QuantityModel.dart';
 import 'package:structure_app/features/Home/domain/model/SchemeModel.dart';
+import 'package:structure_app/features/Home/domain/model/SubSubSystemModel.dart';
+import 'package:structure_app/features/Home/domain/model/SubSystemModel.dart';
 import 'package:structure_app/features/Home/helper/home_helper.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
   HomeBloc() : super(HomeInitialState()) {
     on<HomePageLoaderEvent>(_pageLoader);
-    on<SelectDistrictEvent>(_selectDistrict);
     on<SelectBlockEvent>(_selectBlock);
     on<SelectSchemaEvent>(_selectSchema);
-    on<SelectMajorActivityEvent>(_selectMajorActivity);
+    on<SelectSubSystemValue>(_subSystemValue);
+    on<SelectSubSubSystemValue>(_subSubSystemValue);
     on<SelectActivityEvent>(_selectActivity);
     on<SelectStartDateEvent>(_selectStartDate);
     on<SelectEndDateEvent>(_selectEndDate);
@@ -37,15 +35,12 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   File _photo = File("");
   File get photo => _photo;
 
-  DistrictData? districtValue;
+
   BlockData? blockValue;
   SchemeData? schemeValue;
-  QuantityModel? quantityValue;
-  MajorActivityData? majorActivityValue;
+  FinalSubSystemData? subSystemDataValue;
+  SubSubSystemData? subSubSystemDataValue;
   ActivityData? activityValue;
-
-  List<DistrictData> _districtList = [];
-  List<DistrictData> get districtList => _districtList;
 
   List<BlockData> _blockList = [];
   List<BlockData> get blockList => _blockList;
@@ -53,123 +48,148 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   List<SchemeData> _schemeList = [];
   List<SchemeData> get schemeList => _schemeList;
 
-  QuantityModel _quantityData = QuantityModel();
-  QuantityModel get quantityData => _quantityData;
+  SubSystemModel _subSystemModel = SubSystemModel();
+  SubSystemModel get subSystemModel => _subSystemModel;
 
-  List<MajorActivityData> _majorActivityList = [];
-  List<MajorActivityData> get majorActivityList => _majorActivityList;
+  SubSubSystemModel _subSubSystemModel = SubSubSystemModel();
+  SubSubSystemModel  get subSubSystemModel => _subSubSystemModel;
+
+  ActivityModel _activityModel = ActivityModel();
+  ActivityModel get activityModel => _activityModel;
+
+  List<FinalSubSystemData> _subSystemList = [];
+  List<FinalSubSystemData> get subSystemList => _subSystemList;
+
+  List<SubSubSystemData> _subSubSystemList = [];
+  List<SubSubSystemData> get subSubSystemList => _subSubSystemList;
 
   List<ActivityData> _activityList = [];
   List<ActivityData> get activityList => _activityList;
 
   TextEditingController startDateController = TextEditingController();
   TextEditingController endDateController = TextEditingController();
-  TextEditingController configuredScopeController = TextEditingController();
-  TextEditingController workDoneTodayController = TextEditingController();
   TextEditingController remarksController = TextEditingController();
 
   _pageLoader(HomePageLoaderEvent event, emit) async {
     emit(HomePageLoaderState());
     _isPageLoader = false;
     _photo = File("");
-    districtValue = DistrictData();
+    _subSystemModel = SubSystemModel();
+    _subSubSystemModel = SubSubSystemModel();
+    _activityModel = ActivityModel();
     blockValue = BlockData();
     schemeValue = SchemeData();
-    quantityValue = QuantityModel();
-    majorActivityValue = MajorActivityData();
+    subSystemDataValue = FinalSubSystemData();
+    subSubSystemDataValue = SubSubSystemData();
     activityValue = ActivityData();
-    _districtList = [];
     _blockList = [];
     _schemeList = [];
-    _quantityData = QuantityModel();
-    _majorActivityList = [];
+    _subSystemList = [];
+    _subSubSystemList = [];
     _activityList = [];
     startDateController.text = "";
     endDateController.text = "";
-    configuredScopeController.text = "";
-    workDoneTodayController.text = "";
     remarksController.text = "";
-    await fetchDistrictData(context: event.context);
+    await fetchBlocksData(context: event.context);
     _eventComplete(emit);
   }
 
-  fetchDistrictData({
-    required BuildContext context,
-  }) async {
-    var res = await HomeHelper.districtData(context: context);
-    if (res != null) {
-      _districtList = res.data!;
-    }
-  }
 
-  fetchBlocksData({required BuildContext context, required int districtId, emit}) async {
-    var res = await HomeHelper.blocksData(districtId: districtId, context: context);
+  fetchBlocksData({required BuildContext context}) async {
+    var res = await HomeHelper.blocksData(context: context);
     if (res != null && res.data.isNotEmpty) {
       _blockList = res.data;
       blockValue = null;
       schemeValue = null;
-      majorActivityValue = null;
+      subSystemDataValue = null;
+      subSubSystemDataValue = null;
       activityValue = null;
       _schemeList = [];
-      _majorActivityList = [];
+      _subSystemList = [];
+      _subSubSystemList = [];
       _activityList = [];
-      configuredScopeController.text = "";
-      workDoneTodayController.text = "";
+      startDateController.text = "";
+      endDateController.text = "";
       remarksController.text = "";
+      _photo = File("");
     }
-    _eventComplete(emit);
   }
 
-  fetchSchemesData({required BuildContext context, required int blockId, emit}) async {
+  fetchSchemesData({required BuildContext context, required String blockId, emit}) async {
     var res = await HomeHelper.schemesData(blockId: blockId, context: context);
     if (res!.data.isNotEmpty) {
       _schemeList = res.data;
       schemeValue = null;
-      majorActivityValue = null;
+      subSystemDataValue = null;
+      subSubSystemDataValue = null;
       activityValue = null;
-      _majorActivityList = [];
+      _subSystemList = [];
+      _subSubSystemList = [];
       _activityList = [];
-      configuredScopeController.text = "";
-      workDoneTodayController.text = "";
+      startDateController.text = "";
+      endDateController.text = "";
       remarksController.text = "";
+      _photo = File("");
     }
     _eventComplete(emit);
   }
 
-  fetchMajorActivitiesData({required BuildContext context, required int schemeId, emit}) async {
-    var res = await HomeHelper.majorActivitiesData(schemeId: schemeId, context: context);
-    if (res!.data.isNotEmpty) {
-      _majorActivityList = res.data;
-      majorActivityValue = null;
-      activityValue = null;
-      _activityList = [];
-      configuredScopeController.text = "";
-      workDoneTodayController.text = "";
-      remarksController.text = "";
+  fetchSubSystemsData({required BuildContext context, required String schemeId, emit}) async {
+    var res = await HomeHelper.subSystemsData(schemeId: schemeId, context: context);
+    if(res != null){
+      _subSystemModel = res;
+      if (res.data!.isNotEmpty) {
+        _subSystemList = res.finalData!;
+        subSystemDataValue = null;
+        subSubSystemDataValue = null;
+        activityValue = null;
+        _subSubSystemList = [];
+        _activityList = [];
+        startDateController.text = "";
+        endDateController.text = "";
+        remarksController.text = "";
+        _photo = File("");
+      }
+      _eventComplete(emit);
     }
-    _eventComplete(emit);
   }
 
-  fetchActivitiesData({required BuildContext context, required int schemeId, required int majorActivityId, emit}) async {
-    var res = await HomeHelper.activitiesData(schemeId: schemeId, majorActivityId: majorActivityId, context: context);
-    if (res!.data.isNotEmpty) {
-      _activityList = res.data;
-      activityValue = null;
-      configuredScopeController.text = "";
-      workDoneTodayController.text = "";
-      remarksController.text = "";
+
+  fetchSubSubSystemsData({required BuildContext context, required String schemeId, required String subSystemId, emit}) async {
+    var res = await HomeHelper.subSubSystemsData(schemeId: schemeId,subSystemId: subSystemId,
+        context: context );
+    if(res != null){
+      _subSubSystemModel = res;
+      if (res.data!.isNotEmpty) {
+        _subSubSystemList = res.data!;
+        subSubSystemDataValue = null;
+        activityValue = null;
+        _activityList = [];
+        startDateController.text = "";
+        endDateController.text = "";
+        remarksController.text = "";
+        _photo = File("");
+      }
+      _eventComplete(emit);
     }
-    _eventComplete(emit);
   }
 
-  fetchQuantityData({required BuildContext context, required int schemeId, required int majorActivityId, required int activeId, emit}) async {
-    var res = await HomeHelper.quantityData(schemeId: schemeId, majeorId: majorActivityId, activeId: activeId, context: context);
-    if (res != null) {
-      _quantityData = res;
-      //    configuredScopeController.text = _quantityData.quantity! + _quantityData.uomName!;
+  fetchActivitiesData({required BuildContext context, required String systemId, required String subSubSystemId, emit}) async {
+    var res = await HomeHelper.activitiesData(systemId: systemId,subSubSystemId: subSubSystemId, context: context);
+    if(res  != null){
+      _activityModel = res;
+      if (res.data!.isNotEmpty) {
+        _activityList = res.data!;
+        activityValue = null;
+        startDateController.text = "";
+        endDateController.text = "";
+        remarksController.text = "";
+        _photo = File("");
+      }
+      _eventComplete(emit);
     }
-    _eventComplete(emit);
   }
+
 
   _submitData(HomeSubmitEvent event, emit) async {
     try {
@@ -184,7 +204,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         _eventComplete(emit);
         var res = await HomeHelper.progressData(
             context: event.context,
-            activityId: quantityData.activityId.toString(),
+            activityId: activityValue!.id.toString(),
             startDate: startDateController.text.trim().toString(),
             endDate: endDateController.text.trim().toString(),
             attachFile: photo,
@@ -197,15 +217,19 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
             event.context,
             RoutesName.homeView,
           );
-          districtValue = DistrictData();
-          majorActivityValue = null;
           blockValue = null;
           schemeValue = null;
+          subSystemDataValue = null;
+          subSubSystemDataValue = null;
           activityValue = null;
+         _blockList = [];
+         _schemeList = [];
+         _subSystemList = [];
+         _subSubSystemList = [];
+         _activityList = [];
           startDateController.text = "";
           endDateController.text = "";
           remarksController.text = "";
-          Navigator.pushReplacementNamed(event.context, RoutesName.homeView);
           _eventComplete(emit);
         } else {
           _isPageLoader = false;
@@ -218,38 +242,39 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     }
   }
 
-  _selectDistrict(SelectDistrictEvent event, emit) async {
-    districtValue = event.districtValue;
-    await fetchBlocksData(districtId: int.parse(districtValue!.networkTypeId!), context: event.context, emit: emit);
-    _eventComplete(emit);
-  }
-
   _selectBlock(SelectBlockEvent event, emit) async {
     blockValue = event.blockValue;
-    await fetchSchemesData(blockId: int.parse(blockValue!.blockId!), context: event.context, emit: emit);
+    await fetchSchemesData(blockId: blockValue!.blockId!, context: event.context, emit: emit);
     _eventComplete(emit);
   }
 
   _selectSchema(SelectSchemaEvent event, emit) async {
     schemeValue = event.schemaValue;
-    await fetchMajorActivitiesData(schemeId: int.parse(schemeValue!.schemeId!), context: event.context, emit: emit);
+    await fetchSubSystemsData(schemeId: schemeValue!.schemeId!, context: event.context, emit: emit);
     _eventComplete(emit);
   }
 
-  _selectMajorActivity(SelectMajorActivityEvent event, emit) async {
-    majorActivityValue = event.majorActivityValue;
-    await fetchActivitiesData(schemeId: int.parse(schemeValue!.schemeId!), majorActivityId: int.parse(majorActivityValue!.id!), context: event.context, emit: emit);
-    _eventComplete(emit);
+  _subSystemValue(SelectSubSystemValue event, emit) async {
+    subSystemDataValue = event.subSystemValue;
+    if(subSystemDataValue != null){
+      await fetchSubSubSystemsData(
+          schemeId: schemeValue!.schemeId!, subSystemId: subSystemDataValue!.id!.toString(), context: event.context, emit: emit);
+      _eventComplete(emit);
+    }
+  }
+
+  _subSubSystemValue(SelectSubSubSystemValue event, emit) async {
+    subSubSystemDataValue = event.subSubSystemValue;
+    if(subSubSystemDataValue !=null){
+      await fetchActivitiesData(
+          systemId: schemeValue!.schemeId!, subSubSystemId: subSubSystemDataValue!.id!,
+          context:event.context ,emit: emit);
+      _eventComplete(emit);
+    }
   }
 
   _selectActivity(SelectActivityEvent event, emit) async {
     activityValue = event.activityValue;
-    await fetchQuantityData(
-        schemeId: int.parse(schemeValue!.schemeId!),
-        majorActivityId: int.parse(majorActivityValue!.id!),
-        activeId: int.parse(activityValue!.id!),
-        context: event.context,
-        emit: emit);
     _eventComplete(emit);
   }
 
@@ -260,7 +285,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       startDateController.text = formattedDate.toString();
       _eventComplete(emit);
     } else {
-      print("Date is not selected");
+      log("Date is not selected");
     }
   }
 
@@ -271,7 +296,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       endDateController.text = formattedDate.toString();
       _eventComplete(emit);
     } else {
-      print("Date is not selected");
+      log("Date is not selected");
     }
   }
 
@@ -297,22 +322,23 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     emit(HomeFetchDataState(
         isPageLoader: isPageLoader,
         photo: photo,
-        districtValue: districtValue,
         blockValue: blockValue,
         schemeValue: schemeValue,
-        quantityValue: quantityValue,
-        majorActivityValue: majorActivityValue,
+        subSystemDataValue: subSystemDataValue,
+        subSubSystemDataValue: subSubSystemDataValue,
         activityValue: activityValue,
-        districtList: districtList,
         blockList: blockList,
         schemeList: schemeList,
-        quantityList: quantityData,
-        majorActivityList: majorActivityList,
+        subSystemList: subSystemList,
+        subSubSystemList: subSubSystemList,
         activityList: activityList,
         startDateController: startDateController,
         endDateController: endDateController,
-        configuredScopeController: configuredScopeController,
-        workDoneTodayController: workDoneTodayController,
-        remarksController: remarksController));
+        remarksController: remarksController,
+        subSystemModel:subSystemModel,
+      subSubSystemModel: subSubSystemModel,
+      activityModel: activityModel,
+    ));
   }
+
 }

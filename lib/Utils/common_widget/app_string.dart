@@ -8,9 +8,8 @@ class AppString {
   static String distinct = "Distinct";
   static String block = "Block";
   static String scheme = "Scheme";
-  // static String majorActivity = "Major Activity";
-  static String majorActivity = "Sub System";
   static String subSystem = "Sub System";
+  static String subSubSystem = "Sub Sub System";
   static String activity = "Activity";
   static String startDate = "Start Date";
   static String endDate = "End  Date";

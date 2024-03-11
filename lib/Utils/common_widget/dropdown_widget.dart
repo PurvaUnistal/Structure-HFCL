@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:structure_app/Utils/common_widget/app_color.dart';
+import 'package:structure_app/Utils/common_widget/styles_widget.dart';
 
 class DropdownWidget<T> extends StatelessWidget {
   final T? dropdownValue;
@@ -30,22 +31,13 @@ class DropdownWidget<T> extends StatelessWidget {
           disabledBorder:_border(),
           border: _border(),
           focusedBorder: _border(),
-
-          // label: label!,
           label: Padding(
             padding: const EdgeInsets.only(left: 8.0),
-            child: Text(
-              label??"",
-              style: TextStyle(fontSize: 14, color:  AppColor.appBlue),
-            ),
+            child: Text(label??"", style: Styles.labels,),
           ),
-
         ),
-        hint: Text(
-          hint,
-          style: const TextStyle(fontWeight: FontWeight.normal, fontSize: 12, color: Colors.black),
-        ),
-        style: const TextStyle(fontWeight: FontWeight.normal, fontSize: 12, color: Colors.black),
+        hint: Text(hint, style: Styles.labels),
+        style: Styles.texts,
         isExpanded: true,
         value: dropdownValue != null ? dropdownValue : null,
         items: items.map<DropdownMenuItem<T>>((T value) {
@@ -53,7 +45,7 @@ class DropdownWidget<T> extends StatelessWidget {
             value: value,
             child: Text(
               value.toString(),
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+              style: Styles.texts,
             ),
           );
         }).toList(),

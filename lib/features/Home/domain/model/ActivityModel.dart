@@ -11,12 +11,12 @@ String activityModelToJson(ActivityModel data) => json.encode(data.toJson());
 class ActivityModel {
   final bool? status;
   final int? total;
-  final List<ActivityData> data;
+  final List<ActivityData>? data;
 
   ActivityModel({
      this.status,
      this.total,
-     required this.data,
+    this.data,
   });
 
   factory ActivityModel.fromJson(Map<String, dynamic> json) => ActivityModel(
@@ -28,7 +28,7 @@ class ActivityModel {
   Map<String, dynamic> toJson() => {
     "status": status,
     "total": total,
-    "data": List<dynamic>.from(data.map((x) => x.toJson())),
+    "data": List<dynamic>.from(data!.map((x) => x.toJson())),
   };
 }
 

@@ -11,15 +11,6 @@ class HomePageLoaderEvent extends HomeEvent {
   List<Object?> get props => [context];
 }
 
-class SelectDistrictEvent extends HomeEvent {
-  final dynamic districtValue;
-  final BuildContext context;
-  SelectDistrictEvent({required this.districtValue, required this.context});
-  @override
-  // TODO: implement props
-  List<Object?> get props => [districtValue, context];
-}
-
 class SelectBlockEvent extends HomeEvent {
   final dynamic blockValue;
   final BuildContext context;
@@ -38,15 +29,23 @@ class SelectSchemaEvent extends HomeEvent {
   List<Object?> get props => [schemaValue, context];
 }
 
-class SelectMajorActivityEvent extends HomeEvent {
-  final dynamic majorActivityValue;
+class SelectSubSystemValue extends HomeEvent {
+  final dynamic subSystemValue;
   final BuildContext context;
-  SelectMajorActivityEvent({required this.majorActivityValue, required this.context});
+  SelectSubSystemValue({required this.subSystemValue, required this.context});
   @override
   // TODO: implement props
-  List<Object?> get props => [majorActivityValue, context];
+  List<Object?> get props => [subSystemValue, context];
 }
 
+class SelectSubSubSystemValue extends HomeEvent {
+  final dynamic subSubSystemValue;
+  final BuildContext context;
+  SelectSubSubSystemValue({required this.subSubSystemValue, required this.context});
+  @override
+  // TODO: implement props
+  List<Object?> get props => [subSubSystemValue, context];
+}
 class SelectActivityEvent extends HomeEvent {
   final dynamic activityValue;
   final BuildContext context;
