@@ -72,8 +72,6 @@ class _HomeViewState extends State<HomeView> {
             child: Column(
           children: [
             _verticalSpace(),
-            _districtDropDown(dataState: dataState),
-            _verticalSpace(),
             _blockDropDown(dataState: dataState),
             _verticalSpace(),
             _schemeDropDown(dataState: dataState),
@@ -162,10 +160,10 @@ class _HomeViewState extends State<HomeView> {
         ? Container()
         : _column(
             child: TextFieldWidget(
-            labelText: AppString.startDate,
+            label: AppString.startDate,
             hintText: AppString.startDate,
             enabled: true,
-            textInputType: TextInputType.text,
+              keyboardType: TextInputType.text,
             controller: dataState.startDateController,
             suffixIcon: IconButton(
               icon: Icon(
@@ -188,11 +186,11 @@ class _HomeViewState extends State<HomeView> {
         ? Container()
         : _column(
             child: TextFieldWidget(
-            labelText: AppString.endDate,
+            label: AppString.endDate,
             hintText: AppString.endDate,
             enabled: true,
             textInputAction: TextInputAction.done,
-            textInputType: TextInputType.text,
+            keyboardType: TextInputType.text,
             controller: dataState.endDateController,
             suffixIcon: IconButton(
               icon: Icon(
@@ -215,11 +213,10 @@ class _HomeViewState extends State<HomeView> {
         ? Container()
         : _column(
             child: TextFieldWidget(
-            isRequired: true,
             maxLine: 3,
-            textInputType: TextInputType.text,
+              keyboardType: TextInputType.text,
             textInputAction: TextInputAction.done,
-            labelText: AppString.remarks,
+            label: AppString.remarks,
             controller: dataState.remarksController,
           ));
   }

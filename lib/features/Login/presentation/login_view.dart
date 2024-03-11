@@ -88,11 +88,10 @@ class _LoginViewState extends State<LoginView> {
 
   Widget _emailWidget({required LoginFetchDataState dataState}) {
     return TextFieldWidget(
-      labelText: AppString.emailLabel,
+      label: AppString.emailLabel,
       hintText: AppString.emailLabel,
-      textInputType: TextInputType.emailAddress,
-      prefix: Icon(Icons.email, color: AppColor.appBlue),
-    //  focusNode: emailFocusNode,
+      keyboardType: TextInputType.emailAddress,
+      prefixIcon: Icon(Icons.email, color: AppColor.appBlue),
       autofillHints: const [AutofillHints.email],
       onChanged: (val) {
         BlocProvider.of<LoginBloc>(context).add(
@@ -103,10 +102,10 @@ class _LoginViewState extends State<LoginView> {
 
   Widget _passwordWidget({required LoginFetchDataState dataState}) {
     return TextFieldWidget(
-      labelText: AppString.passwordLabel,
+      label: AppString.passwordLabel,
       hintText: AppString.passwordLabel,
-     textInputType: TextInputType.visiblePassword,
-      prefix: Icon(Icons.lock_outline, color: AppColor.appBlue),
+      keyboardType: TextInputType.visiblePassword,
+      prefixIcon: Icon(Icons.lock_outline, color: AppColor.appBlue),
      // focusNode: passwordFocusNode,
       autofillHints: const [AutofillHints.password],
       obscureText: dataState.isPassword,
