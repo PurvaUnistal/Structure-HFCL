@@ -3,6 +3,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:structure_app/features/Home/domain/model/ActivityModel.dart';
 import 'package:structure_app/features/Home/domain/model/BlockModel.dart';
+import 'package:structure_app/features/Home/domain/model/DistrictsModel.dart';
 import 'package:structure_app/features/Home/domain/model/SchemeModel.dart';
 import 'package:structure_app/features/Home/domain/model/SubSubSystemModel.dart';
 import 'package:structure_app/features/Home/domain/model/SubSystemModel.dart';
@@ -24,6 +25,7 @@ class HomePageLoaderState extends HomeState {
 class HomeFetchDataState extends HomeState {
   bool isPageLoader;
   final File photo;
+  DistrictsData? districtValue;
   BlockData? blockValue;
   SchemeData? schemeValue;
   FinalSubSystemData? subSystemDataValue;
@@ -34,6 +36,7 @@ class HomeFetchDataState extends HomeState {
   List<FinalSubSystemData> subSystemList;
   List<SubSubSystemData> subSubSystemList;
   List<ActivityData> activityList;
+  List<DistrictsData> districtList;
   TextEditingController startDateController;
   TextEditingController endDateController;
   TextEditingController remarksController;
@@ -59,6 +62,8 @@ class HomeFetchDataState extends HomeState {
     required this.subSystemModel,
     required this.subSubSystemModel,
     required this.activityModel,
+    required this.districtValue,
+    required this.districtList,
   });
 
   @override
@@ -82,5 +87,7 @@ class HomeFetchDataState extends HomeState {
     subSystemModel,
     subSubSystemModel,
     activityModel,
+    districtValue,
+    districtList,
       ];
 }

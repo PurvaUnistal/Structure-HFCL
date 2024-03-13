@@ -18,6 +18,7 @@ import 'package:structure_app/features/Home/domain/bloc/home_bloc.dart';
 import 'package:structure_app/features/Home/domain/bloc/home_event.dart';
 import 'package:structure_app/features/Home/domain/bloc/home_state.dart';
 import 'package:structure_app/features/Home/domain/model/BlockModel.dart';
+import 'package:structure_app/features/Home/domain/model/DistrictsModel.dart';
 import 'package:structure_app/features/Home/domain/model/SchemeModel.dart';
 import 'package:structure_app/features/Home/presentation/widget/logout_widget.dart';
 import 'package:structure_app/features/InternetConnection/domain/bloc/network_bloc.dart';
@@ -77,6 +78,8 @@ class _HomeViewState extends State<HomeView> {
             child: Column(
               children: [
                 _verticalSpace(),
+                _distinctDropDown(dataState: dataState),
+                _verticalSpace(),
                 _blockDropDown(dataState: dataState),
                 _verticalSpace(),
                 _schemeDropDown(dataState: dataState),
@@ -96,6 +99,17 @@ class _HomeViewState extends State<HomeView> {
             )));
   }
 
+  Widget _distinctDropDown({required HomeFetchDataState dataState}) {
+    return DropdownWidget<DistrictsData>(
+      hint: AppString.distinct,
+      label: AppString.distinct,
+      dropdownValue: dataState.districtValue?.networkType != null ? dataState.districtValue : null,
+      onChanged: (value) {
+        BlocProvider.of<HomeBloc>(context).add(SelectDistrictEvent(districtValue: value, context: context));
+      },
+      items: dataState.districtList,
+    );
+  }
 
   Widget _blockDropDown({required HomeFetchDataState dataState}) {
     return DropdownWidget<BlockData>(
@@ -129,36 +143,34 @@ class _HomeViewState extends State<HomeView> {
     Column(
       children: [
         Align(
-          alignment: Alignment.topLeft,
+            alignment: Alignment.topLeft,
             child: Text(AppString.subSystem,textAlign: TextAlign.start, style: Styles.labels)),
         Container(
-          height: h * 0.07,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.all(Radius.circular(8)),
-              border: Border.all(color: AppColor.appBlue)
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: List.generate(
-              dataState.subSystemList.length,
-                  (index) => Padding(
+            height: h * 0.07,
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.all(Radius.circular(8)),
+                border: Border.all(color: AppColor.appBlue)
+            ),
+            child: ListView.builder(
+                itemCount: dataState.subSystemList.length,
+                itemBuilder: (BuildContext context, int index){
+                  return Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
                     child: TextButton(
-                                child: Text(dataState.subSystemList[index].subSystem.toString()),
-                                onPressed: (){
-                                  log("dataState.subSystemList-->${dataState.subSystemList[index].id!}");
-                                  BlocProvider.of<HomeBloc>(context).add(
-                                      SelectSubSystemValue(
-                                          subSystemValue: dataState.subSystemList[index],
-                                          context: context
-                                      )
-                                  );
-                                },
+                      child: Text(dataState.subSystemList[index].subSystem.toString()),
+                      onPressed: (){
+                        log("dataState.subSystemList-->${dataState.subSystemList[index].id!}");
+                        BlocProvider.of<HomeBloc>(context).add(
+                            SelectSubSystemValue(
+                                subSystemValue: dataState.subSystemList[index],
+                                context: context
+                            )
+                        );
+                      },
                     ),
-                  ),
-            ),
-          ),
+                  );
+                })
+
         ),
       ],
     );
@@ -179,26 +191,29 @@ class _HomeViewState extends State<HomeView> {
               borderRadius: BorderRadius.all(Radius.circular(8)),
               border: Border.all(color: AppColor.appBlue)
           ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: List.generate(
-              dataState.subSubSystemList.length,
-                  (index) => Padding(
+          child:ListView.builder(
+            itemCount:dataState.subSubSystemList.length,
+            itemBuilder: (BuildContext context, int index){
+              return Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: TextButton(
-                  child: Text(dataState.subSubSystemList[index].subSystem.toString()),
-                  onPressed: (){
-                    BlocProvider.of<HomeBloc>(context).add(
-                        SelectSubSubSystemValue(
-                            subSubSystemValue: dataState.subSubSystemList[index],
-                            context: context
-                        )
-                    );
-                  },
+                child: Row(
+                  children: [
+                    TextButton(
+                      child: Text(dataState.subSubSystemList[index].subSystem.toString()),
+                      onPressed: (){
+                        BlocProvider.of<HomeBloc>(context).add(
+                            SelectSubSubSystemValue(
+                                subSubSystemValue: dataState.subSubSystemList[index],
+                                context: context
+                            )
+                        );
+                      },
+                    ),
+                  ],
                 ),
-              ),
-            ),
+              );
+            },
+
           ),
         ),
       ],
@@ -212,14 +227,14 @@ class _HomeViewState extends State<HomeView> {
         ? Container()
         : _column(
         child:DropdownWidget(
-      hint: AppString.activity,
-      label: AppString.activity,
-      dropdownValue: dataState.activityValue?.name != null ? dataState.activityValue : null,
-      onChanged: (value) {
-        BlocProvider.of<HomeBloc>(context).add(SelectActivityEvent(activityValue: value, context: context));
-      },
-      items: dataState.activityList,
-    )
+          hint: AppString.activity,
+          label: AppString.activity,
+          dropdownValue: dataState.activityValue?.name != null ? dataState.activityValue : null,
+          onChanged: (value) {
+            BlocProvider.of<HomeBloc>(context).add(SelectActivityEvent(activityValue: value, context: context));
+          },
+          items: dataState.activityList,
+        )
     );
   }
 

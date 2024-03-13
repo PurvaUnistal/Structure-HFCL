@@ -10,7 +10,6 @@ class HomePageLoaderEvent extends HomeEvent {
   // TODO: implement props
   List<Object?> get props => [context];
 }
-
 class SelectBlockEvent extends HomeEvent {
   final dynamic blockValue;
   final BuildContext context;
@@ -18,6 +17,15 @@ class SelectBlockEvent extends HomeEvent {
   @override
   // TODO: implement props
   List<Object?> get props => [blockValue, context];
+}
+
+class SelectDistrictEvent extends HomeEvent {
+  final dynamic districtValue;
+  final BuildContext context;
+  SelectDistrictEvent({required this.districtValue, required this.context});
+  @override
+  // TODO: implement props
+  List<Object?> get props => [districtValue, context];
 }
 
 class SelectSchemaEvent extends HomeEvent {

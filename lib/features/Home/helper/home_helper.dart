@@ -9,6 +9,7 @@ import 'package:structure_app/Server/app_url.dart';
 import 'package:structure_app/Utils/common_widget/Utils.dart';
 import 'package:structure_app/features/Home/domain/model/ActivityModel.dart';
 import 'package:structure_app/features/Home/domain/model/BlockModel.dart';
+import 'package:structure_app/features/Home/domain/model/DistrictsModel.dart';
 import 'package:structure_app/features/Home/domain/model/SchemeModel.dart';
 import 'package:structure_app/features/Home/domain/model/SubSubSystemModel.dart';
 import 'package:structure_app/features/Home/domain/model/SubSystemModel.dart';
@@ -16,9 +17,25 @@ import 'package:structure_app/features/Home/domain/model/SubmitModel.dart';
 
 class HomeHelper {
 
-  static Future<BlockModel?> blocksData({required BuildContext context}) async {
+  static Future<DistrictsModel?> districtsData({required BuildContext context}) async {
     try {
-      var res = await ApiServer.getData(urlEndPoint: "${AppUrl.blocks}", context: context);
+      var res = await ApiServer.getData(urlEndPoint: "${AppUrl.districts}", context: context);
+      if (res != null) {
+        return districtsModelFromJson(res);
+      } else {
+        log("BlockModelRes-->${res}");
+        return Utils.failureMeg(res, context);
+      }
+    } catch (e) {
+      log("catchLogin-->${e.toString()}");
+      Utils.failureMeg(e.toString(), context);
+      return null;
+    }
+  }
+
+  static Future<BlockModel?> blocksData({required BuildContext context,required String districtId}) async {
+    try {
+      var res = await ApiServer.getData(urlEndPoint: "${AppUrl.blocks}/$districtId", context: context);
       if (res != null) {
         return blockModelFromJson(res);
       } else {
@@ -32,9 +49,9 @@ class HomeHelper {
     }
   }
 
-  static Future<SchemeModel?> schemesData({required BuildContext context, required String blockId}) async {
+  static Future<SchemeModel?> schemesData({required BuildContext context,required String districtId, required String blockId}) async {
     try {
-      var res = await ApiServer.getData(urlEndPoint: "${AppUrl.schemes}$blockId", context: context);
+      var res = await ApiServer.getData(urlEndPoint: "${AppUrl.schemes}/$districtId/$blockId", context: context);
       if (res != null) {
         return schemeModelFromJson(res);
       } else {
@@ -47,9 +64,9 @@ class HomeHelper {
     }
   }
 
-  static Future<SubSystemModel?> subSystemsData({required BuildContext context, required String schemeId }) async {
+  static Future<SubSystemModel?> subSystemsData({required BuildContext context}) async {
     try {
-      var res = await ApiServer.getData(urlEndPoint: "${AppUrl.subSystems}$schemeId", context: context);
+      var res = await ApiServer.getData(urlEndPoint: "${AppUrl.subSystems}", context: context);
       if (res != null) {
         return subSystemModelFromJson(res);
       } else {
@@ -62,7 +79,7 @@ class HomeHelper {
     }
   }
 
-  static Future<SubSubSystemModel?> subSubSystemsData({required BuildContext context,
+ /* static Future<SubSubSystemModel?> subSubSystemsData({required BuildContext context,
     required String schemeId, required String subSystemId
   }) async {
   try {
@@ -79,11 +96,11 @@ class HomeHelper {
       return null;
     }
   }
+*/
 
-
-  static Future<ActivityModel?> activitiesData({required BuildContext context, required String systemId, required String subSubSystemId}) async {
+  static Future<ActivityModel?> activitiesData({required BuildContext context, required String systemId, }) async {
     try {
-      var res = await ApiServer.getData(urlEndPoint: "${AppUrl.activities}$systemId/$subSubSystemId", context: context);
+      var res = await ApiServer.getData(urlEndPoint: "${AppUrl.activities}/$systemId", context: context);
       if (res != null) {
         return activityModelFromJson(res);
       } else {

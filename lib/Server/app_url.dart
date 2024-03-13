@@ -1,6 +1,7 @@
 class AppUrl{
    static String baseUrl = "https://hfcl.smartutilitiesnet.com/api/";
    static String login = "${baseUrl}auth";
+   static String districts = "${baseUrl}structureinput/districts";
    static String blocks = "${baseUrl}structureinput/blocks/";
    static String schemes = "${baseUrl}structureinput/schemes/";
    static String subSystems = "${baseUrl}structureinput/sub-systems/";
