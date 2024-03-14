@@ -11,7 +11,6 @@ import 'package:structure_app/features/Home/domain/model/ActivityModel.dart';
 import 'package:structure_app/features/Home/domain/model/BlockModel.dart';
 import 'package:structure_app/features/Home/domain/model/DistrictsModel.dart';
 import 'package:structure_app/features/Home/domain/model/SchemeModel.dart';
-import 'package:structure_app/features/Home/domain/model/SubSubSystemModel.dart';
 import 'package:structure_app/features/Home/domain/model/SubSystemModel.dart';
 import 'package:structure_app/features/Home/helper/home_helper.dart';
 
@@ -33,6 +32,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   bool _isPageLoader = false;
   bool get isPageLoader => _isPageLoader;
 
+  bool _isActivityLoader = false;
+  bool get isActivityLoader => _isActivityLoader;
+
   File _photo = File("");
   File get photo => _photo;
 
@@ -40,8 +42,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   DistrictsData? districtValue;
   BlockData? blockValue;
   SchemeData? schemeValue;
-  FinalSubSystemData? subSystemDataValue;
-  SubSubSystemData? subSubSystemDataValue;
+  SubSystemData? subSystemDataValue;
   ActivityData? activityValue;
 
   List<DistrictsData> _districtList = [];
@@ -56,17 +57,11 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   SubSystemModel _subSystemModel = SubSystemModel();
   SubSystemModel get subSystemModel => _subSystemModel;
 
-  SubSubSystemModel _subSubSystemModel = SubSubSystemModel();
-  SubSubSystemModel  get subSubSystemModel => _subSubSystemModel;
-
   ActivityModel _activityModel = ActivityModel();
   ActivityModel get activityModel => _activityModel;
 
-  List<FinalSubSystemData> _subSystemList = [];
-  List<FinalSubSystemData> get subSystemList => _subSystemList;
-
-  List<SubSubSystemData> _subSubSystemList = [];
-  List<SubSubSystemData> get subSubSystemList => _subSubSystemList;
+  List<SubSystemData> _subSystemList = [];
+  List<SubSystemData> get subSystemList => _subSystemList;
 
   List<ActivityData> _activityList = [];
   List<ActivityData> get activityList => _activityList;
@@ -78,21 +73,19 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   _pageLoader(HomePageLoaderEvent event, emit) async {
     emit(HomePageLoaderState());
     _isPageLoader = false;
+    _isActivityLoader = false;
     _photo = File("");
     districtValue = null;
     _subSystemModel = SubSystemModel();
-    _subSubSystemModel = SubSubSystemModel();
     _activityModel = ActivityModel();
     blockValue = BlockData();
     schemeValue = SchemeData();
-    subSystemDataValue = FinalSubSystemData();
-    subSubSystemDataValue = SubSubSystemData();
+    subSystemDataValue = SubSystemData();
     activityValue = ActivityData();
     _districtList = [];
     _blockList = [];
     _schemeList = [];
     _subSystemList = [];
-    _subSubSystemList = [];
     _activityList = [];
     startDateController.text = "";
     endDateController.text = "";
@@ -110,12 +103,10 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       blockValue = null;
       schemeValue = null;
       subSystemDataValue = null;
-      subSubSystemDataValue = null;
       activityValue = null;
       _blockList = [];
       _schemeList = [];
       _subSystemList = [];
-      _subSubSystemList = [];
       _activityList = [];
       startDateController.text = "";
       endDateController.text = "";
@@ -132,11 +123,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       blockValue = null;
       schemeValue = null;
       subSystemDataValue = null;
-      subSubSystemDataValue = null;
       activityValue = null;
       _schemeList = [];
       _subSystemList = [];
-      _subSubSystemList = [];
       _activityList = [];
       startDateController.text = "";
       endDateController.text = "";
@@ -151,10 +140,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       _schemeList = res.data;
       schemeValue = null;
       subSystemDataValue = null;
-      subSubSystemDataValue = null;
       activityValue = null;
       _subSystemList = [];
-      _subSubSystemList = [];
       _activityList = [];
       startDateController.text = "";
       endDateController.text = "";
@@ -163,16 +150,14 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     }
   }
 
-  fetchSubSystemsData({required BuildContext context, required String schemeId, emit}) async {
+  fetchSubSystemsData({required BuildContext context, emit}) async {
     var res = await HomeHelper.subSystemsData(context: context);
     if(res != null){
       _subSystemModel = res;
       if (res.data!.isNotEmpty) {
-        _subSystemList = res.finalData!;
+        _subSystemList = res.data!;
         subSystemDataValue = null;
-        subSubSystemDataValue = null;
         activityValue = null;
-        _subSubSystemList = [];
         _activityList = [];
         startDateController.text = "";
         endDateController.text = "";
@@ -182,26 +167,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       _eventComplete(emit);
     }
   }
-
-
-  /*fetchSubSubSystemsData({required BuildContext context, required String schemeId, required String subSystemId, emit}) async {
-    var res = await HomeHelper.subSubSystemsData(schemeId: schemeId,subSystemId: subSystemId,
-        context: context );
-    if(res != null){
-      _subSubSystemModel = res;
-      if (res.data!.isNotEmpty) {
-        _subSubSystemList = res.data!;
-        subSubSystemDataValue = null;
-        activityValue = null;
-        _activityList = [];
-        startDateController.text = "";
-        endDateController.text = "";
-        remarksController.text = "";
-        _photo = File("");
-      }
-      _eventComplete(emit);
-    }
-  }*/
 
   fetchActivitiesData({required BuildContext context, required String systemId, emit}) async {
     var res = await HomeHelper.activitiesData(systemId: systemId, context: context);
@@ -224,15 +189,21 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     try {
       var validationCheck = await HomeHelper.validationSubmit(
         context: event.context,
-        activityId: activityValue!.id.toString(),
+        networkDistrict: districtValue.toString(),
+        zoneBlock: blockValue.toString(),
+        dmaSystem: schemeValue.toString(),
+        activityId: activityValue.toString(),
         remarks: remarksController.text.trim().toString(),
         attachFile: photo.path.toString(),
       );
-      if (validationCheck == true) {
+      if (await validationCheck == true) {
         _isPageLoader = true;
         _eventComplete(emit);
         var res = await HomeHelper.progressData(
             context: event.context,
+            networkDistrict: districtValue!.networkType.toString(),
+            zoneBlock: blockValue!.zone.toString(),
+            dmaSystem: schemeValue!.dma.toString(),
             activityId: activityValue!.id.toString(),
             startDate: startDateController.text.trim().toString(),
             endDate: endDateController.text.trim().toString(),
@@ -249,12 +220,10 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           blockValue = null;
           schemeValue = null;
           subSystemDataValue = null;
-          subSubSystemDataValue = null;
           activityValue = null;
           _blockList = [];
           _schemeList = [];
           _subSystemList = [];
-          _subSubSystemList = [];
           _activityList = [];
           startDateController.text = "";
           endDateController.text = "";
@@ -284,7 +253,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     if(blockValue != null){
       await fetchSchemesData(
           districtId: districtValue!.networkType,
-          blockId: blockValue!.blockId!,
+          blockId: blockValue!.zone!,
           context: event.context,);
       _eventComplete(emit);
     }
@@ -293,7 +262,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   _selectSchema(SelectSchemaEvent event, emit) async {
     schemeValue = event.schemaValue;
     if(schemeValue != null){
-      await fetchSubSystemsData(schemeId: schemeValue!.schemeId!, context: event.context, emit: emit);
+      await fetchSubSystemsData(context: event.context, emit: emit);
       _eventComplete(emit);
     }
   }
@@ -301,20 +270,13 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   _subSystemValue(SelectSubSystemValue event, emit) async {
     subSystemDataValue = event.subSystemValue;
     if(subSystemDataValue != null){
-      await fetchActivitiesData(systemId: schemeValue!.schemeId!,  context: event.context, emit: emit);
+      _isActivityLoader = true;
+      _eventComplete(emit);
+      await fetchActivitiesData(systemId: subSystemDataValue!.id!,  context: event.context, emit: emit);
+      _isActivityLoader = false;
       _eventComplete(emit);
     }
   }
-
-  /*_subSubSystemValue(SelectSubSubSystemValue event, emit) async {
-    subSubSystemDataValue = event.subSubSystemValue;
-    if(subSubSystemDataValue !=null){
-      await fetchActivitiesData(
-          systemId: schemeValue!.schemeId!, subSubSystemId: subSubSystemDataValue!.id!,
-          context:event.context ,emit: emit);
-      _eventComplete(emit);
-    }
-  }*/
 
   _selectActivity(SelectActivityEvent event, emit) async {
     activityValue = event.activityValue;
@@ -364,22 +326,20 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   _eventComplete(Emitter<HomeState> emit) {
     emit(HomeFetchDataState(
       isPageLoader: isPageLoader,
+      isActivityLoader: isActivityLoader,
       photo: photo,
       blockValue: blockValue,
       schemeValue: schemeValue,
       subSystemDataValue: subSystemDataValue,
-      subSubSystemDataValue: subSubSystemDataValue,
       activityValue: activityValue,
       blockList: blockList,
       schemeList: schemeList,
       subSystemList: subSystemList,
-      subSubSystemList: subSubSystemList,
       activityList: activityList,
       startDateController: startDateController,
       endDateController: endDateController,
       remarksController: remarksController,
       subSystemModel:subSystemModel,
-      subSubSystemModel: subSubSystemModel,
       activityModel: activityModel,
       districtValue: districtValue,
       districtList: districtList,

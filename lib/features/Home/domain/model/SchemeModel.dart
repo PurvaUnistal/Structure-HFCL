@@ -33,26 +33,22 @@ class SchemeModel {
 }
 
 class SchemeData {
-  final String? scheme;
-  final String? schemeId;
+  final String? dma;
 
   SchemeData({
-     this.scheme,
-     this.schemeId,
+     this.dma,
   });
 
   factory SchemeData.fromJson(Map<String, dynamic> json) => SchemeData(
-    scheme: json["scheme"]==null? "":json["scheme"],
-    schemeId: json["scheme_id"] ==null ? '' : json["scheme_id"],
+    dma: json["dma"],
   );
 
   Map<String, dynamic> toJson() => {
-    "scheme": scheme,
-    "scheme_id": schemeId,
+    "dma": dma,
   };
   @override
   String toString() {
     // TODO: implement toString
-    return scheme.toString();
+    return dma.toString();
   }
 }

@@ -20,9 +20,9 @@ class BlockModel {
   });
 
   factory BlockModel.fromJson(Map<String, dynamic> json) => BlockModel(
-    status: json["status"] ?? "",
-    total: json["total"] ?? "",
-    data: json["data"] == null ? [] :List<BlockData>.from(json["data"].map((x) => BlockData.fromJson(x))),
+    status: json["status"],
+    total: json["total"],
+    data: List<BlockData>.from(json["data"].map((x) => BlockData.fromJson(x))),
   );
 
   Map<String, dynamic> toJson() => {
@@ -33,26 +33,22 @@ class BlockModel {
 }
 
 class BlockData {
-  final String? block;
-  final String? blockId;
+  final String? zone;
 
   BlockData({
-     this.block,
-     this.blockId,
+     this.zone,
   });
 
   factory BlockData.fromJson(Map<String, dynamic> json) => BlockData(
-    block: json["block"] ?? "",
-    blockId: json["block_id"] ?? "",
+    zone: json["zone"],
   );
 
   Map<String, dynamic> toJson() => {
-    "block": block,
-    "block_id": blockId,
+    "zone": zone,
   };
   @override
   String toString() {
     // TODO: implement toString
-    return block.toString();
+    return zone.toString();
   }
 }

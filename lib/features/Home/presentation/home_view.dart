@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -85,13 +86,7 @@ class _HomeViewState extends State<HomeView> {
                 _schemeDropDown(dataState: dataState),
                 _verticalSpace(),
                 _subSystem(dataState: dataState),
-                _verticalSpace(),
-                _subSubSystem(dataState: dataState),
-                _activityDropDown(dataState: dataState),
-                _startDateController(dataState: dataState),
-                _endDateController(dataState: dataState),
-                _activityRemark(dataState: dataState),
-                _photo(dataState: dataState),
+                _formActivityWidget(dataState: dataState),
                 _verticalSpace(),
                 _verticalSpace(),
                 _button(dataState: dataState),
@@ -115,8 +110,9 @@ class _HomeViewState extends State<HomeView> {
     return DropdownWidget<BlockData>(
       hint: AppString.block,
       label: AppString.block,
-      dropdownValue: dataState.blockValue?.block != null ? dataState.blockValue : null,
+      dropdownValue: dataState.blockValue?.zone != null ? dataState.blockValue : null,
       onChanged: (value) {
+        log("blockValue-->${ dataState.blockValue}");
         BlocProvider.of<HomeBloc>(context).add(SelectBlockEvent(blockValue: value, context: context));
       },
       items: dataState.blockList,
@@ -127,7 +123,7 @@ class _HomeViewState extends State<HomeView> {
     return DropdownWidget<SchemeData>(
       hint: AppString.scheme,
       label: AppString.scheme,
-      dropdownValue: dataState.schemeValue?.scheme != null ? dataState.schemeValue : null,
+      dropdownValue: dataState.schemeValue?.dma != null ? dataState.schemeValue : null,
       onChanged: (value) {
         BlocProvider.of<HomeBloc>(context).add(SelectSchemaEvent(schemaValue: value, context: context));
       },
@@ -137,91 +133,58 @@ class _HomeViewState extends State<HomeView> {
 
   Widget _subSystem({required HomeFetchDataState dataState}) {
     var h = MediaQuery.of(context).size.height;
-    print("heightdfg-->${h * 0.02}");
-    return dataState.subSystemModel.total == 0 ? Text("No Data"):
-    dataState.subSystemList.isEmpty ? Container():
-    Column(
-      children: [
-        Align(
-            alignment: Alignment.topLeft,
-            child: Text(AppString.subSystem,textAlign: TextAlign.start, style: Styles.labels)),
-        Container(
-            height: h * 0.07,
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.circular(8)),
-                border: Border.all(color: AppColor.appBlue)
-            ),
-            child: ListView.builder(
-                itemCount: dataState.subSystemList.length,
-                itemBuilder: (BuildContext context, int index){
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: TextButton(
-                      child: Text(dataState.subSystemList[index].subSystem.toString()),
-                      onPressed: (){
-                        log("dataState.subSystemList-->${dataState.subSystemList[index].id!}");
-                        BlocProvider.of<HomeBloc>(context).add(
-                            SelectSubSystemValue(
-                                subSystemValue: dataState.subSystemList[index],
-                                context: context
-                            )
-                        );
-                      },
-                    ),
-                  );
-                })
-
+    return dataState.subSystemModel.total == 0 ? Container(): SizedBox(
+      height: h * 0.3,
+      child: GridView.builder(
+        itemCount: dataState.subSystemList.length,
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 4,
+            crossAxisSpacing: 4.0,
+            mainAxisSpacing: 4.0
         ),
-      ],
-    );
-  }
-
-  Widget _subSubSystem({required HomeFetchDataState dataState}) {
-    var h = MediaQuery.of(context).size.height;
-    print("height-->${h * 0.02}");
-    return dataState.subSubSystemModel.total == 0 ? Text("No Data"):dataState.subSystemList.isEmpty ? Container():
-    Column(
-      children: [
-        Align(
-            alignment: Alignment.topLeft,
-            child: Text(AppString.subSubSystem,textAlign: TextAlign.start, style: Styles.labels)),
-        Container(
-          height: h * 0.09,
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.all(Radius.circular(8)),
-              border: Border.all(color: AppColor.appBlue)
-          ),
-          child:ListView.builder(
-            itemCount:dataState.subSubSystemList.length,
-            itemBuilder: (BuildContext context, int index){
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: Row(
-                  children: [
-                    TextButton(
-                      child: Text(dataState.subSubSystemList[index].subSystem.toString()),
-                      onPressed: (){
-                        BlocProvider.of<HomeBloc>(context).add(
-                            SelectSubSubSystemValue(
-                                subSubSystemValue: dataState.subSubSystemList[index],
-                                context: context
-                            )
-                        );
-                      },
-                    ),
-                  ],
-                ),
+        itemBuilder: (BuildContext context, int index){
+          return TextButton(
+            style: ButtonStyle(
+                shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                    RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(18.0),
+                        side: BorderSide(color: AppColor.appBlue)
+                    )
+                )
+            ),
+            child: Text( dataState.subSystemList[index].name!),
+            onPressed: (){
+              BlocProvider.of<HomeBloc>(context).add(
+                  SelectSubSystemValue(
+                      subSystemValue: dataState.subSystemList[index],
+                      context: context
+                  )
               );
             },
-
-          ),
-        ),
-      ],
+          );
+        },
+      ),
     );
   }
 
-
-
+  Widget _formActivityWidget({required HomeFetchDataState dataState}){
+    return dataState.isActivityLoader == false
+        ? dataState.activityList.isEmpty ? Container() :DottedBorder(
+      color: AppColor.appBlue,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            _activityDropDown(dataState: dataState),
+            _startDateController(dataState: dataState),
+            _endDateController(dataState: dataState),
+            _activityRemark(dataState: dataState),
+            _photo(dataState: dataState),
+          ],
+        ),
+      ),
+    ) : Center(child:  SpinLoader(),);
+  }
   Widget _activityDropDown({required HomeFetchDataState dataState}) {
     return dataState.activityModel.total == 0 ? Text("No Data") : dataState.activityList.isEmpty
         ? Container()

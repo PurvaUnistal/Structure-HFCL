@@ -1,6 +1,5 @@
 import 'dart:developer';
 import 'dart:io';
-import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -11,7 +10,6 @@ import 'package:structure_app/features/Home/domain/model/ActivityModel.dart';
 import 'package:structure_app/features/Home/domain/model/BlockModel.dart';
 import 'package:structure_app/features/Home/domain/model/DistrictsModel.dart';
 import 'package:structure_app/features/Home/domain/model/SchemeModel.dart';
-import 'package:structure_app/features/Home/domain/model/SubSubSystemModel.dart';
 import 'package:structure_app/features/Home/domain/model/SubSystemModel.dart';
 import 'package:structure_app/features/Home/domain/model/SubmitModel.dart';
 
@@ -35,7 +33,7 @@ class HomeHelper {
 
   static Future<BlockModel?> blocksData({required BuildContext context,required String districtId}) async {
     try {
-      var res = await ApiServer.getData(urlEndPoint: "${AppUrl.blocks}/$districtId", context: context);
+      var res = await ApiServer.getData(urlEndPoint: "${AppUrl.blocks}$districtId", context: context);
       if (res != null) {
         return blockModelFromJson(res);
       } else {
@@ -51,7 +49,7 @@ class HomeHelper {
 
   static Future<SchemeModel?> schemesData({required BuildContext context,required String districtId, required String blockId}) async {
     try {
-      var res = await ApiServer.getData(urlEndPoint: "${AppUrl.schemes}/$districtId/$blockId", context: context);
+      var res = await ApiServer.getData(urlEndPoint: "${AppUrl.schemes}$districtId/$blockId", context: context);
       if (res != null) {
         return schemeModelFromJson(res);
       } else {
@@ -79,28 +77,9 @@ class HomeHelper {
     }
   }
 
- /* static Future<SubSubSystemModel?> subSubSystemsData({required BuildContext context,
-    required String schemeId, required String subSystemId
-  }) async {
-  try {
-    var res = await ApiServer.getData(urlEndPoint: "${AppUrl.subSubSystems}${base64Url.encode(utf8.encode(subSystemId))}/$schemeId", context: context);
-      log("subSubSystems-->${AppUrl.subSubSystems}$subSystemId$schemeId");
-      if (res != null) {
-        return subSubSystemModelFromJson(res);
-      } else {
-        return Utils.failureMeg(res, context);
-      }
-    } catch (e) {
-      log("catchLogin-->${e.toString()}");
-      Utils.failureMeg(e.toString(), context);
-      return null;
-    }
-  }
-*/
-
   static Future<ActivityModel?> activitiesData({required BuildContext context, required String systemId, }) async {
     try {
-      var res = await ApiServer.getData(urlEndPoint: "${AppUrl.activities}/$systemId", context: context);
+      var res = await ApiServer.getData(urlEndPoint: "${AppUrl.activities}$systemId", context: context);
       if (res != null) {
         return activityModelFromJson(res);
       } else {
@@ -139,20 +118,35 @@ class HomeHelper {
 
   static Future<dynamic> validationSubmit({
     required BuildContext context,
+    required String networkDistrict,
+    required String zoneBlock,
+    required String dmaSystem,
     required String activityId,
     required String remarks,
     required String attachFile,
   }) async {
     try {
-      if (activityId.isEmpty) {
+      if (networkDistrict.isEmpty ||  networkDistrict == "null") {
+        Utils.failureMeg("The Network District field is required.", context);
+        return false;
+      }
+      else if (zoneBlock.isEmpty ||  zoneBlock == "null") {
+        Utils.failureMeg("The Zone Block field is required.", context);
+        return false;
+      }
+      else  if (dmaSystem.isEmpty ||  dmaSystem == "null") {
+        Utils.failureMeg("The DMA System field is required.", context);
+        return false;
+      }
+      else if (activityId.isEmpty ||  activityId == "null") {
         Utils.failureMeg("The Activity field is required.", context);
         return false;
       }
-      if (remarks.isEmpty) {
+      else if (remarks.isEmpty) {
         Utils.failureMeg("The Remarks is required.", context);
         return false;
       }
-      if (attachFile.isEmpty) {
+      else if (attachFile.isEmpty) {
         Utils.failureMeg("The attach File is required.", context);
         return false;
       }
@@ -164,6 +158,9 @@ class HomeHelper {
 
   static Future<SubmitModel?> progressData({
     required BuildContext context,
+    required String networkDistrict,
+    required String zoneBlock,
+    required String dmaSystem,
     required String activityId,
     required String startDate,
     required String endDate,
@@ -171,6 +168,9 @@ class HomeHelper {
     required String remarks,
   }) async {
     var body = {
+      "networkDistrict": networkDistrict,
+      "zoneBlock": zoneBlock,
+      "dmaSystem": dmaSystem,
       "activityId": activityId,
       "startDate": startDate,
       "endDate": endDate,
