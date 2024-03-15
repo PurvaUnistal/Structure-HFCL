@@ -12,7 +12,6 @@ import 'package:structure_app/Utils/common_widget/app_string.dart';
 import 'package:structure_app/Utils/common_widget/button_widget.dart';
 import 'package:structure_app/Utils/common_widget/dropdown_widget.dart';
 import 'package:structure_app/Utils/common_widget/image_pop_widget.dart';
-import 'package:structure_app/Utils/common_widget/styles_widget.dart';
 import 'package:structure_app/Utils/common_widget/text_form_widget.dart';
 import 'package:structure_app/Utils/local_img_widget.dart';
 import 'package:structure_app/features/Home/domain/bloc/home_bloc.dart';
@@ -77,21 +76,21 @@ class _HomeViewState extends State<HomeView> {
         margin: const EdgeInsets.all(10.0),
         child: SingleChildScrollView(
             child: Column(
-              children: [
-                _verticalSpace(),
-                _distinctDropDown(dataState: dataState),
-                _verticalSpace(),
-                _blockDropDown(dataState: dataState),
-                _verticalSpace(),
-                _schemeDropDown(dataState: dataState),
-                _verticalSpace(),
-                _subSystem(dataState: dataState),
-                _formActivityWidget(dataState: dataState),
-                _verticalSpace(),
-                _verticalSpace(),
-                _button(dataState: dataState),
-              ],
-            )));
+          children: [
+            _verticalSpace(),
+            _distinctDropDown(dataState: dataState),
+            _verticalSpace(),
+            _blockDropDown(dataState: dataState),
+            _verticalSpace(),
+            _schemeDropDown(dataState: dataState),
+            _verticalSpace(),
+            _subSystem(dataState: dataState),
+            _formActivityWidget(dataState: dataState),
+            _verticalSpace(),
+            _verticalSpace(),
+            _button(dataState: dataState),
+          ],
+        )));
   }
 
   Widget _distinctDropDown({required HomeFetchDataState dataState}) {
@@ -112,7 +111,7 @@ class _HomeViewState extends State<HomeView> {
       label: AppString.block,
       dropdownValue: dataState.blockValue?.zone != null ? dataState.blockValue : null,
       onChanged: (value) {
-        log("blockValue-->${ dataState.blockValue}");
+        log("blockValue-->${dataState.blockValue}");
         BlocProvider.of<HomeBloc>(context).add(SelectBlockEvent(blockValue: value, context: context));
       },
       items: dataState.blockList,
@@ -133,177 +132,180 @@ class _HomeViewState extends State<HomeView> {
 
   Widget _subSystem({required HomeFetchDataState dataState}) {
     var h = MediaQuery.of(context).size.height;
-    return dataState.subSystemModel.total == 0 ? Container(): SizedBox(
-      height: h * 0.3,
-      child: GridView.builder(
-        itemCount: dataState.subSystemList.length,
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 4,
-            crossAxisSpacing: 4.0,
-            mainAxisSpacing: 4.0
-        ),
-        itemBuilder: (BuildContext context, int index){
-          return TextButton(
-            style: ButtonStyle(
-                shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                    RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(18.0),
-                        side: BorderSide(color: AppColor.appBlue)
-                    )
-                )
+    return dataState.subSystemModel.total == 0
+        ? Container()
+        : SizedBox(
+            height: h * 0.3,
+            child: GridView.builder(
+              itemCount: dataState.subSystemList.length,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 4, crossAxisSpacing: 4.0, mainAxisSpacing: 4.0),
+              itemBuilder: (BuildContext context, int index) {
+                return TextButton(
+                  style: ButtonStyle(
+                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(borderRadius: BorderRadius.circular(18.0), side: BorderSide(color: AppColor.appBlue)))),
+                  child: Text(dataState.subSystemList[index].name!),
+                  onPressed: () {
+                    BlocProvider.of<HomeBloc>(context).add(SelectSubSystemValue(subSystemValue: dataState.subSystemList[index], context: context));
+                  },
+                );
+              },
             ),
-            child: Text( dataState.subSystemList[index].name!),
-            onPressed: (){
-              BlocProvider.of<HomeBloc>(context).add(
-                  SelectSubSystemValue(
-                      subSystemValue: dataState.subSystemList[index],
-                      context: context
-                  )
-              );
-            },
           );
-        },
-      ),
-    );
   }
 
-  Widget _formActivityWidget({required HomeFetchDataState dataState}){
+  Widget _formActivityWidget({required HomeFetchDataState dataState}) {
     return dataState.isActivityLoader == false
-        ? dataState.activityList.isEmpty ? Container() :DottedBorder(
-      color: AppColor.appBlue,
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            _activityDropDown(dataState: dataState),
-            _startDateController(dataState: dataState),
-            _endDateController(dataState: dataState),
-            _activityRemark(dataState: dataState),
-            _photo(dataState: dataState),
-          ],
-        ),
-      ),
-    ) : Center(child:  SpinLoader(),);
+        ? dataState.activityList.isEmpty
+            ? Container()
+            : DottedBorder(
+                color: AppColor.appBlue,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    children: [
+                      _activityDropDown(dataState: dataState),
+                      _startDateController(dataState: dataState),
+                      _endDateController(dataState: dataState),
+                      _activityRemark(dataState: dataState),
+                      _photo(dataState: dataState),
+                    ],
+                  ),
+                ),
+              )
+        : Center(
+            child: SpinLoader(),
+          );
   }
+
   Widget _activityDropDown({required HomeFetchDataState dataState}) {
-    return dataState.activityModel.total == 0 ? Text("No Data") : dataState.activityList.isEmpty
-        ? Container()
-        : _column(
-        child:DropdownWidget(
-          hint: AppString.activity,
-          label: AppString.activity,
-          dropdownValue: dataState.activityValue?.name != null ? dataState.activityValue : null,
-          onChanged: (value) {
-            BlocProvider.of<HomeBloc>(context).add(SelectActivityEvent(activityValue: value, context: context));
-          },
-          items: dataState.activityList,
-        )
-    );
+    return dataState.activityModel.total == 0
+        ? Text("No Data")
+        : dataState.activityList.isEmpty
+            ? Container()
+            : _column(
+                child: DropdownWidget(
+                hint: AppString.activity,
+                label: AppString.activity,
+                dropdownValue: dataState.activityValue?.name != null ? dataState.activityValue : null,
+                onChanged: (value) {
+                  BlocProvider.of<HomeBloc>(context).add(SelectActivityEvent(activityValue: value, context: context));
+                },
+                items: dataState.activityList,
+              ));
   }
 
   Widget _startDateController({required HomeFetchDataState dataState}) {
-    return dataState.activityModel.total == 0 ? Container() :dataState.activityList.isEmpty
+    return dataState.activityModel.total == 0
         ? Container()
-        : _column(
-        child: TextFieldWidget(
-          label: AppString.startDate,
-          hintText: AppString.startDate,
-          enabled: true,
-          keyboardType: TextInputType.text,
-          controller: dataState.startDateController,
-          suffixIcon: IconButton(
-            icon: Icon(
-              Icons.calendar_today_rounded,
-              color: AppColor.appBlue,
-            ),
-            onPressed: () {
-              BlocProvider.of<HomeBloc>(context).add(SelectStartDateEvent(context: context));
-            },
-          ),
-          onTap: () {
-            FocusScope.of(context).focusedChild!.unfocus();
-            BlocProvider.of<HomeBloc>(context).add(SelectStartDateEvent(context: context));
-          },
-        ));
+        : dataState.activityList.isEmpty
+            ? Container()
+            : _column(
+                child: TextFieldWidget(
+                label: AppString.startDate,
+                hintText: AppString.startDate,
+                enabled: dataState.activityStartDateModel!.data == null ? true : false,
+                keyboardType: TextInputType.text,
+                controller: dataState.startDateController,
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    Icons.calendar_today_rounded,
+                    color: AppColor.appBlue,
+                  ),
+                  onPressed: () {
+                    BlocProvider.of<HomeBloc>(context).add(SelectStartDateEvent(context: context));
+                  },
+                ),
+                onTap: () {
+                  FocusScope.of(context).focusedChild!.unfocus();
+                  BlocProvider.of<HomeBloc>(context).add(SelectStartDateEvent(context: context));
+                },
+              ));
   }
 
   Widget _endDateController({required HomeFetchDataState dataState}) {
-    return dataState.activityModel.total == 0 ? Container() :dataState.activityList.isEmpty
+    return dataState.activityModel.total == 0
         ? Container()
-        : _column(
-        child: TextFieldWidget(
-          label: AppString.endDate,
-          hintText: AppString.endDate,
-          enabled: true,
-          textInputAction: TextInputAction.done,
-          keyboardType: TextInputType.text,
-          controller: dataState.endDateController,
-          suffixIcon: IconButton(
-            icon: Icon(
-              Icons.calendar_today_rounded,
-              color: AppColor.appBlue,
-            ),
-            onPressed: () {
-              BlocProvider.of<HomeBloc>(context).add(SelectEndDateEvent(context: context));
-            },
-          ),
-          onTap: () {
-            FocusScope.of(context).focusedChild!.unfocus();
-            BlocProvider.of<HomeBloc>(context).add(SelectEndDateEvent(context: context));
-          },
-        ));
+        : dataState.activityList.isEmpty
+            ? Container()
+            : _column(
+                child: TextFieldWidget(
+                label: AppString.endDate,
+                hintText: AppString.endDate,
+                enabled: true,
+                textInputAction: TextInputAction.done,
+                keyboardType: TextInputType.text,
+                controller: dataState.endDateController,
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    Icons.calendar_today_rounded,
+                    color: AppColor.appBlue,
+                  ),
+                  onPressed: () {
+                    BlocProvider.of<HomeBloc>(context).add(SelectEndDateEvent(context: context));
+                  },
+                ),
+                onTap: () {
+                  FocusScope.of(context).focusedChild!.unfocus();
+                  BlocProvider.of<HomeBloc>(context).add(SelectEndDateEvent(context: context));
+                },
+              ));
   }
 
   Widget _activityRemark({required HomeFetchDataState dataState}) {
-    return dataState.activityModel.total == 0 ? Container() :dataState.activityList.isEmpty
+    return dataState.activityModel.total == 0
         ? Container()
-        : _column(
-        child: TextFieldWidget(
-          maxLine: 3,
-          keyboardType: TextInputType.text,
-          textInputAction: TextInputAction.done,
-          label: AppString.remarks,
-          controller: dataState.remarksController,
-        ));
+        : dataState.activityList.isEmpty
+            ? Container()
+            : _column(
+                child: TextFieldWidget(
+                maxLine: 3,
+                keyboardType: TextInputType.text,
+                textInputAction: TextInputAction.done,
+                label: AppString.remarks,
+                controller: dataState.remarksController,
+              ));
   }
 
   Widget _photo({required HomeFetchDataState dataState}) {
-    return dataState.activityModel.total == 0 ? Container() :dataState.activityList.isEmpty
+    return dataState.activityModel.total == 0
         ? Container()
-        : _column(
-      child: LocalImgWidget(
-        file: dataState.photo,
-        onTap: () {
-          showModalBottomSheet(
-              enableDrag: true,
-              isScrollControlled: true,
-              context: context,
-              builder: (BuildContext context) {
-                return ImagePopWidget(
-                  onTapCamera: () async {
-                    Navigator.of(context).pop();
-                    BlocProvider.of<HomeBloc>(context).add(CaptureCameraEvent());
+        : dataState.activityList.isEmpty
+            ? Container()
+            : _column(
+                child: LocalImgWidget(
+                  file: dataState.photo,
+                  onTap: () {
+                    showModalBottomSheet(
+                        enableDrag: true,
+                        isScrollControlled: true,
+                        context: context,
+                        builder: (BuildContext context) {
+                          return ImagePopWidget(
+                            onTapCamera: () async {
+                              Navigator.of(context).pop();
+                              BlocProvider.of<HomeBloc>(context).add(CaptureCameraEvent());
+                            },
+                            onTapGallery: () async {
+                              Navigator.of(context).pop();
+                              BlocProvider.of<HomeBloc>(context).add(CaptureGalleryEvent());
+                            },
+                          );
+                        });
                   },
-                  onTapGallery: () async {
-                    Navigator.of(context).pop();
-                    BlocProvider.of<HomeBloc>(context).add(CaptureGalleryEvent());
-                  },
-                );
-              });
-        },
-      ),
-    );
+                ),
+              );
   }
 
   Widget _button({required HomeFetchDataState dataState}) {
     return dataState.isPageLoader == false
         ? ButtonWidget(
-        text: AppString.submit,
-        onPressed: () {
-          FocusScope.of(context).unfocus();
-          TextInput.finishAutofillContext();
-          BlocProvider.of<HomeBloc>(context).add(HomeSubmitEvent(context: context));
-        })
+            text: AppString.submit,
+            onPressed: () {
+              FocusScope.of(context).unfocus();
+              TextInput.finishAutofillContext();
+              BlocProvider.of<HomeBloc>(context).add(HomeSubmitEvent(context: context));
+            })
         : const DottedLoaderWidget();
   }
 

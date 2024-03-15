@@ -12,22 +12,26 @@ class SubmitModel {
   final bool? status;
   final String? message;
   final String? errors;
+  final String? success;
 
   SubmitModel({
-     this.status,
-     this.message,
-     this.errors,
+    this.status,
+    this.message,
+    this.errors,
+    this.success,
   });
 
   factory SubmitModel.fromJson(Map<String, dynamic> json) => SubmitModel(
-    status: json["status"],
-    message: json["message"] == null ? null :json["message"],
-    errors: json["errors"] == null ? null :json["errors"],
-  );
+        status: json["status"] == null ? null : json["status"],
+        success: json["success"] == null ? null : json["success"],
+        message: json["message"] == null ? null : json["message"],
+        errors: json["errors"] == null ? null : json["errors"],
+      );
 
   Map<String, dynamic> toJson() => {
-    "status": status,
-    "message": message,
-    "errors": errors,
-  };
+        "status": status,
+        "success": success,
+        "message": message,
+        "errors": errors,
+      };
 }

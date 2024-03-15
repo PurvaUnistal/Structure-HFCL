@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
@@ -8,6 +9,7 @@ import 'package:structure_app/Utils/routes/routes_name.dart';
 import 'package:structure_app/features/Home/domain/bloc/home_event.dart';
 import 'package:structure_app/features/Home/domain/bloc/home_state.dart';
 import 'package:structure_app/features/Home/domain/model/ActivityModel.dart';
+import 'package:structure_app/features/Home/domain/model/ActivityStartDateModel.dart';
 import 'package:structure_app/features/Home/domain/model/BlockModel.dart';
 import 'package:structure_app/features/Home/domain/model/DistrictsModel.dart';
 import 'package:structure_app/features/Home/domain/model/SchemeModel.dart';
@@ -38,7 +40,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   File _photo = File("");
   File get photo => _photo;
 
-
   DistrictsData? districtValue;
   BlockData? blockValue;
   SchemeData? schemeValue;
@@ -59,6 +60,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
   ActivityModel _activityModel = ActivityModel();
   ActivityModel get activityModel => _activityModel;
+
+  ActivityStartDateModel _activityStartDateModel = ActivityStartDateModel();
+  ActivityStartDateModel get activityStartDateModel => _activityStartDateModel;
 
   List<SubSystemData> _subSystemList = [];
   List<SubSystemData> get subSystemList => _subSystemList;
@@ -82,6 +86,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     schemeValue = SchemeData();
     subSystemDataValue = SubSystemData();
     activityValue = ActivityData();
+    _activityStartDateModel = ActivityStartDateModel();
     _districtList = [];
     _blockList = [];
     _schemeList = [];
@@ -94,8 +99,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     _eventComplete(emit);
   }
 
-
-  fetchDistrictsData({required BuildContext context,}) async {
+  fetchDistrictsData({
+    required BuildContext context,
+  }) async {
     var res = await HomeHelper.districtsData(context: context);
     if (res != null && res.data.isNotEmpty) {
       _districtList = res.data;
@@ -113,11 +119,13 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       remarksController.text = "";
       _photo = File("");
     }
-
   }
 
-  fetchBlocksData({required BuildContext context, required String districtId,}) async {
-    var res = await HomeHelper.blocksData(context: context,districtId: districtId);
+  fetchBlocksData({
+    required BuildContext context,
+    required String districtId,
+  }) async {
+    var res = await HomeHelper.blocksData(context: context, districtId: districtId);
     if (res != null && res.data.isNotEmpty) {
       _blockList = res.data;
       blockValue = null;
@@ -134,8 +142,12 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     }
   }
 
-  fetchSchemesData({required BuildContext context, required String blockId, required String districtId,}) async {
-    var res = await HomeHelper.schemesData(blockId: blockId,districtId: districtId, context: context);
+  fetchSchemesData({
+    required BuildContext context,
+    required String blockId,
+    required String districtId,
+  }) async {
+    var res = await HomeHelper.schemesData(blockId: blockId, districtId: districtId, context: context);
     if (res!.data.isNotEmpty) {
       _schemeList = res.data;
       schemeValue = null;
@@ -152,7 +164,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
   fetchSubSystemsData({required BuildContext context, emit}) async {
     var res = await HomeHelper.subSystemsData(context: context);
-    if(res != null){
+    if (res != null) {
       _subSystemModel = res;
       if (res.data!.isNotEmpty) {
         _subSystemList = res.data!;
@@ -168,9 +180,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     }
   }
 
-  fetchActivitiesData({required BuildContext context, required String systemId, emit}) async {
-    var res = await HomeHelper.activitiesData(systemId: systemId, context: context);
-    if(res  != null){
+  fetchActivitiesData({required BuildContext context, required String districtId, required String blockId, required String schemeId, required String systemId, emit}) async {
+    var res = await HomeHelper.activitiesData(districtId: districtId, blockId: blockId, schemeId: schemeId, systemId: systemId, context: context);
+    if (res != null) {
       _activityModel = res;
       if (res.data!.isNotEmpty) {
         _activityList = res.data!;
@@ -184,6 +196,19 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     }
   }
 
+  fetchActivityStartDate(
+      {required BuildContext context,
+      required String districtId,
+      required String blockId,
+      required String schemeId,
+      required String systemId,
+      required String activitiesId,
+      emit}) async {
+    var res = await HomeHelper.activityStartDate(districtId: districtId, blockId: blockId, schemeId: schemeId, systemId: systemId, activitiesId: activitiesId, context: context);
+    if (res != null) {
+      _activityStartDateModel = res;
+    }
+  }
 
   _submitData(HomeSubmitEvent event, emit) async {
     try {
@@ -192,6 +217,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         networkDistrict: districtValue.toString(),
         zoneBlock: blockValue.toString(),
         dmaSystem: schemeValue.toString(),
+        subSystemId: subSystemDataValue.toString(),
+        startDate: startDateController.text.trim().toString(),
         activityId: activityValue.toString(),
         remarks: remarksController.text.trim().toString(),
         attachFile: photo.path.toString(),
@@ -204,6 +231,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
             networkDistrict: districtValue!.networkType.toString(),
             zoneBlock: blockValue!.zone.toString(),
             dmaSystem: schemeValue!.dma.toString(),
+            subSystemId: subSystemDataValue!.id.toString(),
             activityId: activityValue!.id.toString(),
             startDate: startDateController.text.trim().toString(),
             endDate: endDateController.text.trim().toString(),
@@ -242,26 +270,30 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
   _selectDistrict(SelectDistrictEvent event, emit) async {
     districtValue = event.districtValue;
-    if(districtValue != null){
-      await fetchBlocksData(districtId: districtValue!.networkType, context: event.context,);
+    if (districtValue != null) {
+      await fetchBlocksData(
+        districtId: districtValue!.networkType,
+        context: event.context,
+      );
       _eventComplete(emit);
     }
   }
 
   _selectBlock(SelectBlockEvent event, emit) async {
     blockValue = event.blockValue;
-    if(blockValue != null){
+    if (blockValue != null) {
       await fetchSchemesData(
-          districtId: districtValue!.networkType,
-          blockId: blockValue!.zone!,
-          context: event.context,);
+        districtId: districtValue!.networkType,
+        blockId: blockValue!.zone!,
+        context: event.context,
+      );
       _eventComplete(emit);
     }
   }
 
   _selectSchema(SelectSchemaEvent event, emit) async {
     schemeValue = event.schemaValue;
-    if(schemeValue != null){
+    if (schemeValue != null) {
       await fetchSubSystemsData(context: event.context, emit: emit);
       _eventComplete(emit);
     }
@@ -269,10 +301,11 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
   _subSystemValue(SelectSubSystemValue event, emit) async {
     subSystemDataValue = event.subSystemValue;
-    if(subSystemDataValue != null){
+    if (subSystemDataValue != null) {
       _isActivityLoader = true;
       _eventComplete(emit);
-      await fetchActivitiesData(systemId: subSystemDataValue!.id!,  context: event.context, emit: emit);
+      await fetchActivitiesData(
+          districtId: districtValue!.networkType, blockId: blockValue!.zone!, schemeId: schemeValue!.dma!, systemId: subSystemDataValue!.id!, context: event.context, emit: emit);
       _isActivityLoader = false;
       _eventComplete(emit);
     }
@@ -280,17 +313,33 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
   _selectActivity(SelectActivityEvent event, emit) async {
     activityValue = event.activityValue;
+    if (activityValue != null) {
+      fetchActivityStartDate(
+        context: event.context,
+        districtId: districtValue!.networkType,
+        blockId: blockValue!.zone!,
+        schemeId: schemeValue!.dma!,
+        systemId: subSystemDataValue!.id!,
+        activitiesId: activityValue!.id!,
+        emit: emit,
+      );
+    }
     _eventComplete(emit);
   }
 
   _selectStartDate(SelectStartDateEvent event, emit) async {
-    DateTime? dateTime = await showDatePicker(context: event.context, initialDate: DateTime.now(), firstDate: DateTime(1950), lastDate: DateTime.now());
-    if (dateTime != null) {
-      String formattedDate = DateFormat('yyyy-MM-dd').format(dateTime);
-      startDateController.text = formattedDate.toString();
-      _eventComplete(emit);
+    if (activityStartDateModel.data.toString().isEmpty) {
+      startDateController.text = activityStartDateModel.data!.toIso8601String();
     } else {
-      log("Date is not selected");
+      DateTime? dateTime = await showDatePicker(context: event.context, initialDate: DateTime.now(), firstDate: DateTime(1950), lastDate: DateTime.now());
+      if (dateTime != null) {
+        // String formattedDate = DateFormat('yyyy-MM-dd').format(dateTime);
+        String formattedDate = DateFormat('yyyy-MM-dd').format(dateTime);
+        startDateController.text = formattedDate.toString();
+        _eventComplete(emit);
+      } else {
+        log("Date is not selected");
+      }
     }
   }
 
@@ -339,11 +388,11 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       startDateController: startDateController,
       endDateController: endDateController,
       remarksController: remarksController,
-      subSystemModel:subSystemModel,
+      subSystemModel: subSystemModel,
       activityModel: activityModel,
       districtValue: districtValue,
       districtList: districtList,
+      activityStartDateModel: activityStartDateModel,
     ));
   }
-
 }

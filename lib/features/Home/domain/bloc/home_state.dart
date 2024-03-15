@@ -1,7 +1,9 @@
 import 'dart:io';
+
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:structure_app/features/Home/domain/model/ActivityModel.dart';
+import 'package:structure_app/features/Home/domain/model/ActivityStartDateModel.dart';
 import 'package:structure_app/features/Home/domain/model/BlockModel.dart';
 import 'package:structure_app/features/Home/domain/model/DistrictsModel.dart';
 import 'package:structure_app/features/Home/domain/model/SchemeModel.dart';
@@ -38,8 +40,9 @@ class HomeFetchDataState extends HomeState {
   TextEditingController startDateController;
   TextEditingController endDateController;
   TextEditingController remarksController;
-  SubSystemModel  subSystemModel;
+  SubSystemModel subSystemModel;
   ActivityModel activityModel;
+  ActivityStartDateModel? activityStartDateModel;
   HomeFetchDataState({
     required this.isPageLoader,
     required this.isActivityLoader,
@@ -59,28 +62,30 @@ class HomeFetchDataState extends HomeState {
     required this.activityModel,
     required this.districtValue,
     required this.districtList,
+    required this.activityStartDateModel,
   });
 
   @override
   // TODO: implement props
   List<Object?> get props => [
-    isPageLoader,
-    isActivityLoader,
-    photo,
-    blockValue,
-    schemeValue,
-    subSystemDataValue,
-    activityValue,
-    blockList,
-    schemeList,
-    subSystemList,
-    activityList,
-    startDateController,
-    endDateController,
-    remarksController,
-    subSystemModel,
-    activityModel,
-    districtValue,
-    districtList,
+        isPageLoader,
+        isActivityLoader,
+        photo,
+        blockValue,
+        schemeValue,
+        subSystemDataValue,
+        activityValue,
+        blockList,
+        schemeList,
+        subSystemList,
+        activityList,
+        startDateController,
+        endDateController,
+        remarksController,
+        subSystemModel,
+        activityModel,
+        districtValue,
+        districtList,
+        activityStartDateModel,
       ];
 }
