@@ -7,6 +7,7 @@ class AppUrl {
   static String subSystems = "${baseUrl}structureinput/sub-systems/";
   static String subSubSystems = "${baseUrl}structureinput/sub-sub-systems/";
   static String activities = "${baseUrl}structureinput/activities/";
+  static String allContractor = "${baseUrl}allContractor?";
   static String activityStartDate = "${baseUrl}structureinput/activity-start-date/";
   static String quantity = "${baseUrl}structureinput/quantity/";
   static String progress = "${baseUrl}structureinput/progress";

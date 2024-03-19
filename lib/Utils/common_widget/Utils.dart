@@ -5,12 +5,13 @@ class Utils {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
+            Flexible(child: Text(msg)),
             Icon(
               Icons.check_circle,
               color: AppColor.white,
             ),
-            Flexible(child: Text(msg)),
           ],
         ),
         backgroundColor: Colors.green,
@@ -24,12 +25,13 @@ class Utils {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
+            Flexible(child: Text(msg)),
             Icon(
               Icons.warning_amber_rounded,
               color: AppColor.white,
             ),
-            Flexible(child: Text(msg)),
           ],
         ),
         backgroundColor: Colors.orangeAccent.shade200,
@@ -43,12 +45,13 @@ class Utils {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
+            Flexible(child: Text(msg)),
             Icon(
               Icons.close,
               color: AppColor.white,
             ),
-            Flexible(child: Text(msg)),
           ],
         ),
         backgroundColor: Colors.red,

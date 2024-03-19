@@ -3,10 +3,12 @@ import 'package:structure_app/Utils/common_widget/app_color.dart';
 
 class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
   final String title;
+  final Widget? leading;
   final List<Widget>? actions;
   const AppBarWidget(
       {Key? key,
       required this.title,
+       this.leading,
        this.actions})
       : super(key: key);
 
@@ -18,6 +20,7 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       backgroundColor: Colors.transparent,
       elevation: 0,
+      leading: leading ?? Container(),
       centerTitle: true,
       title: Padding(
         padding: const EdgeInsets.only(top: 18.0),

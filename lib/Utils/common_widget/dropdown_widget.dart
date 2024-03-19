@@ -6,6 +6,7 @@ class DropdownWidget<T> extends StatelessWidget {
   final T? dropdownValue;
   final String hint;
   final String? label;
+  final String? star;
   final void Function(T?)? onChanged;
   final List<T> items;
 
@@ -16,6 +17,7 @@ class DropdownWidget<T> extends StatelessWidget {
     required this.items,
     required this.hint,
     this.label,
+    this.star,
   }) : super(key: key);
 
   @override
@@ -32,8 +34,17 @@ class DropdownWidget<T> extends StatelessWidget {
           border: _border(),
           focusedBorder: _border(),
           label: Padding(
-            padding: const EdgeInsets.only(left: 8.0),
-            child: Text(label??"", style: Styles.labels,),
+            padding: const EdgeInsets.only(left: 2.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Flexible(child: Text(star??"",  style:Styles.stars)),
+                Flexible(child: Text(label  ?? "", style:Styles.labels),
+                ),
+              ],
+            ),
           ),
         ),
         hint: Text(hint, style: Styles.labels),

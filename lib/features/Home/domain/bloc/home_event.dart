@@ -63,6 +63,16 @@ class SelectActivityEvent extends HomeEvent {
   List<Object?> get props => [activityValue, context];
 }
 
+
+class SelectContractorEvent extends HomeEvent {
+  final dynamic contractorValue;
+  final BuildContext context;
+  SelectContractorEvent({required this.contractorValue, required this.context});
+  @override
+  // TODO: implement props
+  List<Object?> get props => [contractorValue, context];
+}
+
 class SelectStartDateEvent extends HomeEvent {
   final BuildContext context;
   SelectStartDateEvent({required this.context});

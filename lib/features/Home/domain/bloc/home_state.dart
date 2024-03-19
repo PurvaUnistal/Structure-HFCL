@@ -4,6 +4,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:structure_app/features/Home/domain/model/ActivityModel.dart';
 import 'package:structure_app/features/Home/domain/model/ActivityStartDateModel.dart';
+import 'package:structure_app/features/Home/domain/model/AllContractorModel.dart';
 import 'package:structure_app/features/Home/domain/model/BlockModel.dart';
 import 'package:structure_app/features/Home/domain/model/DistrictsModel.dart';
 import 'package:structure_app/features/Home/domain/model/SchemeModel.dart';
@@ -43,6 +44,8 @@ class HomeFetchDataState extends HomeState {
   SubSystemModel subSystemModel;
   ActivityModel activityModel;
   ActivityStartDateModel? activityStartDateModel;
+  AllContractorData? allContractorValue;
+  List<AllContractorData> allContractorDataList;
   HomeFetchDataState({
     required this.isPageLoader,
     required this.isActivityLoader,
@@ -63,29 +66,33 @@ class HomeFetchDataState extends HomeState {
     required this.districtValue,
     required this.districtList,
     required this.activityStartDateModel,
+    required this.allContractorDataList,
+    required this.allContractorValue,
   });
 
   @override
   // TODO: implement props
   List<Object?> get props => [
-        isPageLoader,
-        isActivityLoader,
-        photo,
-        blockValue,
-        schemeValue,
-        subSystemDataValue,
-        activityValue,
-        blockList,
-        schemeList,
-        subSystemList,
-        activityList,
-        startDateController,
-        endDateController,
-        remarksController,
-        subSystemModel,
-        activityModel,
-        districtValue,
-        districtList,
-        activityStartDateModel,
-      ];
+    isPageLoader,
+    isActivityLoader,
+    photo,
+    blockValue,
+    schemeValue,
+    subSystemDataValue,
+    activityValue,
+    blockList,
+    schemeList,
+    subSystemList,
+    activityList,
+    startDateController,
+    endDateController,
+    remarksController,
+    subSystemModel,
+    activityModel,
+    districtValue,
+    districtList,
+    activityStartDateModel,
+    allContractorDataList,
+    allContractorValue
+  ];
 }

@@ -10,6 +10,7 @@ import 'package:structure_app/features/Home/domain/bloc/home_event.dart';
 import 'package:structure_app/features/Home/domain/bloc/home_state.dart';
 import 'package:structure_app/features/Home/domain/model/ActivityModel.dart';
 import 'package:structure_app/features/Home/domain/model/ActivityStartDateModel.dart';
+import 'package:structure_app/features/Home/domain/model/AllContractorModel.dart';
 import 'package:structure_app/features/Home/domain/model/BlockModel.dart';
 import 'package:structure_app/features/Home/domain/model/DistrictsModel.dart';
 import 'package:structure_app/features/Home/domain/model/SchemeModel.dart';
@@ -24,6 +25,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     on<SelectSchemaEvent>(_selectSchema);
     on<SelectSubSystemValue>(_subSystemValue);
     on<SelectActivityEvent>(_selectActivity);
+    on<SelectContractorEvent>(_selectContractor);
     on<SelectStartDateEvent>(_selectStartDate);
     on<SelectEndDateEvent>(_selectEndDate);
     on<CaptureCameraEvent>(_captureCamera);
@@ -45,6 +47,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   SchemeData? schemeValue;
   SubSystemData? subSystemDataValue;
   ActivityData? activityValue;
+  AllContractorData? contractorValue;
 
   List<DistrictsData> _districtList = [];
   List<DistrictsData> get districtList => _districtList;
@@ -60,6 +63,12 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
   ActivityModel _activityModel = ActivityModel();
   ActivityModel get activityModel => _activityModel;
+
+  AllContractorModel _allContractorData = AllContractorModel();
+  AllContractorModel get allContractorData => _allContractorData;
+
+  List<AllContractorData> _contractorList = [];
+  List<AllContractorData> get contractorList => _contractorList;
 
   ActivityStartDateModel _activityStartDateModel = ActivityStartDateModel();
   ActivityStartDateModel get activityStartDateModel => _activityStartDateModel;
@@ -87,11 +96,13 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     subSystemDataValue = SubSystemData();
     activityValue = ActivityData();
     _activityStartDateModel = ActivityStartDateModel();
+    contractorValue = AllContractorData();
     _districtList = [];
     _blockList = [];
     _schemeList = [];
     _subSystemList = [];
     _activityList = [];
+    _contractorList = [];
     startDateController.text = "";
     endDateController.text = "";
     remarksController.text = "";
@@ -196,14 +207,31 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     }
   }
 
+
+  fetchContractorData({required BuildContext context}) async {
+    var res = await HomeHelper.allContractorData(context: context);
+    if (res != null) {
+      _allContractorData = res;
+      if (res.data != null && res.data!.isNotEmpty) {
+        _contractorList = res.data!;
+        contractorValue = null;
+        activityValue = null;
+        startDateController.text = "";
+        endDateController.text = "";
+        remarksController.text = "";
+        _photo = File("");
+      }
+    }
+  }
+
   fetchActivityStartDate(
       {required BuildContext context,
-      required String districtId,
-      required String blockId,
-      required String schemeId,
-      required String systemId,
-      required String activitiesId,
-      emit}) async {
+        required String districtId,
+        required String blockId,
+        required String schemeId,
+        required String systemId,
+        required String activitiesId,
+        emit}) async {
     var res = await HomeHelper.activityStartDate(districtId: districtId, blockId: blockId, schemeId: schemeId, systemId: systemId, activitiesId: activitiesId, context: context);
     if (res != null) {
       _activityStartDateModel = res;
@@ -219,6 +247,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         dmaSystem: schemeValue.toString(),
         subSystemId: subSystemDataValue.toString(),
         startDate: startDateController.text.trim().toString(),
+        contractorId : contractorValue.toString(),
         activityId: activityValue.toString(),
         remarks: remarksController.text.trim().toString(),
         attachFile: photo.path.toString(),
@@ -232,6 +261,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
             zoneBlock: blockValue!.zone.toString(),
             dmaSystem: schemeValue!.dma.toString(),
             subSystemId: subSystemDataValue!.id.toString(),
+            contractorId: contractorValue!.id.toString(),
             activityId: activityValue!.id.toString(),
             startDate: startDateController.text.trim().toString(),
             endDate: endDateController.text.trim().toString(),
@@ -306,6 +336,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       _eventComplete(emit);
       await fetchActivitiesData(
           districtId: districtValue!.networkType, blockId: blockValue!.zone!, schemeId: schemeValue!.dma!, systemId: subSystemDataValue!.id!, context: event.context, emit: emit);
+      await fetchContractorData(context: event.context);
       _isActivityLoader = false;
       _eventComplete(emit);
     }
@@ -327,11 +358,16 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     _eventComplete(emit);
   }
 
+  _selectContractor(SelectContractorEvent event, emit) async {
+    contractorValue = event.contractorValue;
+    _eventComplete(emit);
+  }
+
   _selectStartDate(SelectStartDateEvent event, emit) async {
     if (activityStartDateModel.data.toString().isEmpty) {
       startDateController.text = activityStartDateModel.data!.toIso8601String();
     } else {
-      DateTime? dateTime = await showDatePicker(context: event.context, initialDate: DateTime.now(), firstDate: DateTime(1950), lastDate: DateTime.now());
+      DateTime? dateTime = await showDatePicker(context: event.context, initialDate: DateTime.now(), firstDate: DateTime(1950), lastDate: DateTime(2050));
       if (dateTime != null) {
         // String formattedDate = DateFormat('yyyy-MM-dd').format(dateTime);
         String formattedDate = DateFormat('yyyy-MM-dd').format(dateTime);
@@ -344,7 +380,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   }
 
   _selectEndDate(SelectEndDateEvent event, emit) async {
-    DateTime? dateTime = await showDatePicker(context: event.context, initialDate: DateTime.now(), firstDate: DateTime(1950), lastDate: DateTime.now());
+    DateTime? dateTime = await showDatePicker(context: event.context, initialDate: DateTime.now(), firstDate: DateTime(1950), lastDate: DateTime(2050));
     if (dateTime != null) {
       String formattedDate = DateFormat('yyyy-MM-dd').format(dateTime);
       endDateController.text = formattedDate.toString();
@@ -393,6 +429,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       districtValue: districtValue,
       districtList: districtList,
       activityStartDateModel: activityStartDateModel,
+      allContractorDataList: contractorList,
+      allContractorValue: contractorValue,
     ));
   }
 }

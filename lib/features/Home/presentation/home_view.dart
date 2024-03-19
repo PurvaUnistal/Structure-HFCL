@@ -12,11 +12,13 @@ import 'package:structure_app/Utils/common_widget/app_string.dart';
 import 'package:structure_app/Utils/common_widget/button_widget.dart';
 import 'package:structure_app/Utils/common_widget/dropdown_widget.dart';
 import 'package:structure_app/Utils/common_widget/image_pop_widget.dart';
+import 'package:structure_app/Utils/common_widget/styles_widget.dart';
 import 'package:structure_app/Utils/common_widget/text_form_widget.dart';
 import 'package:structure_app/Utils/local_img_widget.dart';
 import 'package:structure_app/features/Home/domain/bloc/home_bloc.dart';
 import 'package:structure_app/features/Home/domain/bloc/home_event.dart';
 import 'package:structure_app/features/Home/domain/bloc/home_state.dart';
+import 'package:structure_app/features/Home/domain/model/AllContractorModel.dart';
 import 'package:structure_app/features/Home/domain/model/BlockModel.dart';
 import 'package:structure_app/features/Home/domain/model/DistrictsModel.dart';
 import 'package:structure_app/features/Home/domain/model/SchemeModel.dart';
@@ -45,6 +47,14 @@ class _HomeViewState extends State<HomeView> {
     return Scaffold(
       appBar: AppBarWidget(
         title: AppString.home,
+        leading: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(AppString.release,style: Styles.rel,),
+            Text(AppString.reDate,style: Styles.rel,),
+          ],
+        ),
         actions: [
           IconButton(
               onPressed: () async {
@@ -95,6 +105,7 @@ class _HomeViewState extends State<HomeView> {
 
   Widget _distinctDropDown({required HomeFetchDataState dataState}) {
     return DropdownWidget<DistrictsData>(
+      star: AppString.star,
       hint: AppString.distinct,
       label: AppString.distinct,
       dropdownValue: dataState.districtValue?.networkType != null ? dataState.districtValue : null,
@@ -107,6 +118,7 @@ class _HomeViewState extends State<HomeView> {
 
   Widget _blockDropDown({required HomeFetchDataState dataState}) {
     return DropdownWidget<BlockData>(
+      star: AppString.star,
       hint: AppString.block,
       label: AppString.block,
       dropdownValue: dataState.blockValue?.zone != null ? dataState.blockValue : null,
@@ -120,6 +132,7 @@ class _HomeViewState extends State<HomeView> {
 
   Widget _schemeDropDown({required HomeFetchDataState dataState}) {
     return DropdownWidget<SchemeData>(
+      star: AppString.star,
       hint: AppString.scheme,
       label: AppString.scheme,
       dropdownValue: dataState.schemeValue?.dma != null ? dataState.schemeValue : null,
@@ -164,6 +177,7 @@ class _HomeViewState extends State<HomeView> {
                   padding: const EdgeInsets.all(8.0),
                   child: Column(
                     children: [
+                      _contractorDropDown(dataState: dataState),
                       _activityDropDown(dataState: dataState),
                       _startDateController(dataState: dataState),
                       _endDateController(dataState: dataState),
@@ -177,6 +191,23 @@ class _HomeViewState extends State<HomeView> {
             child: SpinLoader(),
           );
   }
+  Widget _contractorDropDown({required HomeFetchDataState dataState}) {
+    return dataState.activityModel.total == 0
+        ? Text("No Data")
+        : dataState.activityList.isEmpty
+        ? Container()
+        : _column(
+        child: DropdownWidget<AllContractorData>(
+          star: AppString.star,
+          hint: AppString.contractor,
+          label: AppString.contractor,
+          dropdownValue: dataState.allContractorValue?.companyName != null ? dataState.allContractorValue : null,
+          onChanged: (value) {
+            BlocProvider.of<HomeBloc>(context).add(SelectContractorEvent(contractorValue: value, context: context));
+          },
+          items: dataState.allContractorDataList,
+        ));
+  }
 
   Widget _activityDropDown({required HomeFetchDataState dataState}) {
     return dataState.activityModel.total == 0
@@ -185,6 +216,7 @@ class _HomeViewState extends State<HomeView> {
             ? Container()
             : _column(
                 child: DropdownWidget(
+                  star: AppString.star,
                 hint: AppString.activity,
                 label: AppString.activity,
                 dropdownValue: dataState.activityValue?.name != null ? dataState.activityValue : null,
