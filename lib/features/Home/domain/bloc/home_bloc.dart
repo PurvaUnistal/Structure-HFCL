@@ -79,6 +79,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   List<ActivityData> _activityList = [];
   List<ActivityData> get activityList => _activityList;
 
+  TextEditingController schemeIdController = TextEditingController();
   TextEditingController startDateController = TextEditingController();
   TextEditingController endDateController = TextEditingController();
   TextEditingController remarksController = TextEditingController();
@@ -103,6 +104,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     _subSystemList = [];
     _activityList = [];
     _contractorList = [];
+    schemeIdController.text = "";
     startDateController.text = "";
     endDateController.text = "";
     remarksController.text = "";
@@ -324,6 +326,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   _selectSchema(SelectSchemaEvent event, emit) async {
     schemeValue = event.schemaValue;
     if (schemeValue != null) {
+      schemeIdController.clear();
+      schemeIdController.text = schemeValue!.schemeId.toString();
       await fetchSubSystemsData(context: event.context, emit: emit);
       _eventComplete(emit);
     }
@@ -431,6 +435,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       activityStartDateModel: activityStartDateModel,
       allContractorDataList: contractorList,
       allContractorValue: contractorValue,
+      schemeIdController: schemeIdController,
     ));
   }
 }

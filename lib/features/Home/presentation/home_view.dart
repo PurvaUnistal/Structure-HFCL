@@ -94,6 +94,8 @@ class _HomeViewState extends State<HomeView> {
             _verticalSpace(),
             _schemeDropDown(dataState: dataState),
             _verticalSpace(),
+            _schemeIdController(dataState: dataState),
+            _verticalSpace(),
             _subSystem(dataState: dataState),
             _formActivityWidget(dataState: dataState),
             _verticalSpace(),
@@ -140,6 +142,18 @@ class _HomeViewState extends State<HomeView> {
         BlocProvider.of<HomeBloc>(context).add(SelectSchemaEvent(schemaValue: value, context: context));
       },
       items: dataState.schemeList,
+    );
+  }
+
+  Widget _schemeIdController({required HomeFetchDataState dataState}) {
+    return TextFieldWidget(
+      star: AppString.star,
+      label: AppString.schemeId,
+      hintText: AppString.schemeId,
+      enabled: false,
+      textInputAction: TextInputAction.done,
+      keyboardType: TextInputType.text,
+      controller: dataState.schemeIdController,
     );
   }
 

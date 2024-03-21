@@ -1,7 +1,7 @@
 class AppString {
   static String appName = "HFCL App";
   static String release = "Release Date";
-  static String reDate = "19-03-2024";
+  static String reDate = "21-03-2024";
 
   static String emailLabel = "Enter User Name";
   static String emailValid = "The email field must contain a valid email address.";
@@ -11,6 +11,7 @@ class AppString {
   static String distinct = "Distinct";
   static String block = "Block";
   static String scheme = "Scheme";
+  static String schemeId = "Scheme Id";
   static String subSystem = "Sub System";
   static String subSubSystem = "Sub Sub System";
   static String activity = "Activity";

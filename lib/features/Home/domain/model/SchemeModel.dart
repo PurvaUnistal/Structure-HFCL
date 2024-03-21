@@ -34,17 +34,22 @@ class SchemeModel {
 
 class SchemeData {
   final String? dma;
+  final String? schemeId;
 
   SchemeData({
      this.dma,
+    this.schemeId,
   });
 
   factory SchemeData.fromJson(Map<String, dynamic> json) => SchemeData(
     dma: json["dma"],
+    schemeId: json["scheme_id"],
   );
 
   Map<String, dynamic> toJson() => {
     "dma": dma,
+    "scheme_id": schemeId,
+
   };
   @override
   String toString() {

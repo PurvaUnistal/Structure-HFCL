@@ -41,6 +41,7 @@ class HomeFetchDataState extends HomeState {
   TextEditingController startDateController;
   TextEditingController endDateController;
   TextEditingController remarksController;
+  TextEditingController schemeIdController;
   SubSystemModel subSystemModel;
   ActivityModel activityModel;
   ActivityStartDateModel? activityStartDateModel;
@@ -68,6 +69,7 @@ class HomeFetchDataState extends HomeState {
     required this.activityStartDateModel,
     required this.allContractorDataList,
     required this.allContractorValue,
+    required this.schemeIdController,
   });
 
   @override
@@ -93,6 +95,7 @@ class HomeFetchDataState extends HomeState {
     districtList,
     activityStartDateModel,
     allContractorDataList,
-    allContractorValue
+    allContractorValue,
+    schemeIdController,
   ];
 }
